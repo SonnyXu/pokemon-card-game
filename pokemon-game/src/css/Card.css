@@ -1,0 +1,8 @@
+.Info {
+  width: 80px;
+  height: 120px;
+  border: 2px black solid;
+  margin-left: 20px;
+  margin-top: 10px;
+  padding: 8px
+}

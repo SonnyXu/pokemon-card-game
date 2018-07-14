@@ -1,0 +1,73 @@
+.event{
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    right: 40px;
+    bottom: 40px;
+    border: 1px solid rgb(204, 204, 204);
+    background: coral;
+    overflow: auto;
+    border-radius: 4px;
+    outline: none;
+    padding: 20px;
+    margin: 0;
+
+  }
+
+.image {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.text{
+  text-align: center;
+  margin-top:10px;
+}
+
+.choiceA {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 25px;
+  margin-bottom: 10px;
+}
+
+.choiceB {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.choiceC {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.choiceD {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+
+
+.align {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 30px
+}
+
+.text{
+  font-size: 20px;
+  margin-top: 15px
+}
