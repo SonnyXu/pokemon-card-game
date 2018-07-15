@@ -257,7 +257,7 @@ class Fight extends Component {
         var maxHealth = this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.maxHealth;
         var possibility = Math.pow(currentHealth/maxHealth, 1/3);
         console.log(possibility);
-        if (Math.random() > 0) {
+        if (Math.random() > possibility) {
           console.log("shou fu");
           var arr = this.state.allPokemon;
           arr.push({

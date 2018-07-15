@@ -795,6 +795,7 @@ class Game extends Component {
   }
 
   changePokemon(index) {
+    if (this.state.status !== "free") return;
     var arr = this.state.cards;
     var cardsCanBeUsed = this.state.cardsCanBeUsed;
     arr = [];
@@ -867,12 +868,12 @@ class Game extends Component {
           <button className="end-game" onClick={() => this.endGame()}>End</button>
           </div>
           <div className='info'>
-            <div>-Info Box-</div>
-            <div>-------------</div>
+            <h2>Status</h2>
             <div className="money"><img height="40px" width="40px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNFEfQpOgik7rqwk-vSAi_0JRuMCdkF6o4E8HXpAwa8iNEPQNfYQ"/> {this.state.money}</div>
             <img onClick={() => this.openModal()} height="40px" width="40px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxiU3srf5eo0zh5MTzLpI9_j93foOwgaiufXVj70_6feNN_ckW6g" />
-            <div>Pokemons</div>
-            <div>Click to Switch</div>
+            <h6>Click to Switch Pokemon</h6>
+            <h6>You can only swtich</h6>
+            <h6>when not in the battle</h6>
             <div>{this.state.allPokemon.map((pokemon, i) => {
               if (pokemon.attribute === "water") {
                 return <div style={{backgroundColor: this.state.color[i]}}><img onClick={() => this.changePokemon(i)} height="40px" width="40px" src="https://pic.chinaz.com/2016/0802/6360573314774644572287630.jpeg"/> HP: {pokemon.health.currentHealth}</div>
