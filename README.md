@@ -1,4 +1,4 @@
-Update to 1.0.1
-Fix the bug when switching pokemon during the battle.
-Fix the bug of possibility of catching pokemon.
-Add more information in the Info Box.
+Update to Version 1.0.1
+Fix the possibility of catching pokemon.
+Add some information on Info Box.
+Fix the problem when switching pokemon during the battle
