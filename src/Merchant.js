@@ -18,10 +18,9 @@ class Merchant extends Component {
          isOpen={this.state.showModal}
          contentLabel="All cards">
         <button className="Bag-Btn btn2" onClick={() => {this.props.closeModal(); this.setState({showModal: false})}}>Back</button>
-
         <div className='Sale-Items'>
           <div>
-         <img width='650' height='200' src='https://securionpay.com/wp-content/uploads/2016/03/Online-merchant-%E2%80%93-what-is-it.svg' />
+         <img alt="" width='650' height='200' src='https://securionpay.com/wp-content/uploads/2016/03/Online-merchant-%E2%80%93-what-is-it.svg' />
          </div>
          <h3>Items</h3>
          <div>Money You Have: {this.props.money}</div><br/>

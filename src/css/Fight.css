@@ -37,6 +37,7 @@
 
 .imageThree {
   padding-right: 90px;
+  display: flex;
 }
 
 .choose {

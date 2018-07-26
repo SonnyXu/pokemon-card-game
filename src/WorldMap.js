@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import './css/App.css';
+import './css/WorldMap.css';
 import Area from './Area.js';
 
-class App extends Component {
+class WorldMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -28,4 +28,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default WorldMap;
