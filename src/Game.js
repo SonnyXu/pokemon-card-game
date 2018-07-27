@@ -389,6 +389,8 @@ class Game extends Component {
     }
   }
 
+
+
   move(row, col) {
     if (!this.state.start) return;
     let rowOfMap = this.state.row;
@@ -567,7 +569,7 @@ class Game extends Component {
       return <div>
         <div className="start-and-end">
           <button className="start-game" onClick={() => this.startGame()}>Start</button>
-          <button className="end-game" onClick={() => this.endGame()}>End</button>
+          <button className="end-game" onClick={() => this.props.logout()}>Logout</button>
         </div>
         <div className="Before-Start">Please start game.</div>
       </div>

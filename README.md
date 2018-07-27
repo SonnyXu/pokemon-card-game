@@ -1,5 +1,8 @@
 # pokemon-card-game
 
+Update to Version 1.1.0
+Player has to register first before they play the game.
+
 Update to Version 1.0.2
 Clean up the code and optimize the algorithm.
 
