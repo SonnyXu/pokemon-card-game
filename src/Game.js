@@ -111,15 +111,18 @@ class Game extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = null;
+    console.log("componentWillMount", this.state)
   }
 
   componentWillMount () {
     console.log('Will Mount', this.props.info)
     if (this.props.info && this.props.info.start) {
       this.setState(this.props.info)
+      console.log("我跑到第一个了")
     } else {
       this.save(startStatus)
+      console.log("我跑到第二个了")
     }
 
   }
@@ -162,48 +165,6 @@ class Game extends Component {
 
   closeModal4() {
     this.save({showModal4: false})
-  }
-
-  getFirstPokemon(attribute) {
-    let obj = {
-      level: {
-        num: 1,
-        maxExp: 100,
-        currentExp: 0
-      },
-      health: {
-        maxHealth: 20,
-        currentHealth: 20,
-      },
-      attack: {
-        phy: 0,
-        mag: 0
-      },
-      defence: 0,
-      attribute: attribute
-    }
-    return obj;
-  }
-
-  async getFirstCards(attribute) {
-    let cards = this.state.cards;
-    for (let i = 0; i < 5; i++) {
-      cards.push({name: "attack", attack: 5, cost: 1, description: "5 damages"});
-    }
-    for (let i = 0; i < 5; i++) {
-      cards.push({name: "defence", defence: 5, cost: 1, description: "5 armor"});
-    }
-    for (let i = 0; i < 3; i++) {
-      cards.push({name: attribute, [attribute]: 3, cost: 1, description: `3 ${attribute} damages`});
-    }
-    for (let i = 0; i < 1; i++) {
-      cards.push({name: "get two cards", getCards: 2, cost: 1, description: "get 2 cards"});
-    }
-    for (let i = 0; i < 1; i++) {
-      cards.push({name: "healing", healing: 3, cost: 1, description: "get 3 health"});
-    }
-
-    await this.save({cards: cards});
   }
 
   startGame() {
@@ -506,18 +467,44 @@ class Game extends Component {
   }
 
   async chooseFirstPokemon(attribute) {
-    let obj = this.getFirstPokemon(attribute);
+    let obj = {
+      level: {
+        num: 1,
+        maxExp: 100,
+        currentExp: 0
+      },
+      health: {
+        maxHealth: 20,
+        currentHealth: 20,
+      },
+      attack: {
+        phy: 0,
+        mag: 0
+      },
+      defence: 0,
+      attribute: attribute
+    }
     let arrAllPokemon = this.state.allPokemon;
-
     arrAllPokemon.push(obj);
-    this.getFirstCards(attribute);
 
-    // 1 save
-    await this.save({
-      pokemon: obj,
-      allPokemon: arrAllPokemon,
-      showModal5: false
-    });
+    let cards = this.state.cards;
+    for (let i = 0; i < 5; i++) {
+      cards.push({name: "attack", attack: 5, cost: 1, description: "5 damages"});
+    }
+    for (let i = 0; i < 5; i++) {
+      cards.push({name: "defence", defence: 5, cost: 1, description: "5 armor"});
+    }
+    for (let i = 0; i < 3; i++) {
+      cards.push({name: attribute, [attribute]: 3, cost: 1, description: `3 ${attribute} damages`});
+    }
+    for (let i = 0; i < 1; i++) {
+      cards.push({name: "get two cards", getCards: 2, cost: 1, description: "get 2 cards"});
+    }
+    for (let i = 0; i < 1; i++) {
+      cards.push({name: "healing", healing: 3, cost: 1, description: "get 3 health"});
+    }
+
+    await this.save({pokemon: obj, allPokemon: arrAllPokemon, cards: cards, showModal5: false});
   }
 
   changePokemon(index) {
@@ -584,8 +571,7 @@ class Game extends Component {
       cardsInHand.push(j[0])
     }
 
-
-    console.log(this.state);
+    console.log("before fight",cards, cardsInHand, cardsLeft, this.state.position)
     if (!this.state.start) {
       return <div>
         <div className="start-and-end">
@@ -630,7 +616,7 @@ class Game extends Component {
           move={(i ,j) => this.move(i, j)}/>
           :
           <Fight
-            save={(obj) => this.save(obj)}
+            save={async (obj) => await this.save(obj)}
             worldMap={this.state.worldMap}
             position={this.state.position}
             win={() => this.win()}
