@@ -103,53 +103,71 @@ let startStatus = {
 
 
 class Game extends Component {
+
   constructor(props) {
     super(props);
-    this.state = startStatus
+    this.state = {};
   }
 
-  openModal() {
-    this.setState({
-      showModal: true
-    });
+  async componentWillMount () {
+    if (this.props.info.start) {
+      this.setState(this.props.info)
+    } else {
+      let newS =  this.save(startStatus)
+      this.setState(newS)
+    }
+
   }
 
-  handleCloseModal() {
-    this.setState({
-      showModal: false
+  async save(obj) {
+    console.log("I'm saving start")
+    let newObj;
+    await fetch('http://localhost:1337/save', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authentication': 'bearer ' + localStorage.getItem('token')
+      },
+      body: JSON.stringify(obj)
     })
+    .then((res) => res.json())
+    .then((resp) => {
+      newObj = resp
+    })
+    .catch((err) => {
+      // network error
+      console.log('error', err)
+    })
+    console.log('before return')
+    return newObj
   }
 
-  closeModal2() {
+  async openModal() {
+    let newState = await this.save({showModal: true})
+    this.setState(newState);
+  }
+
+  async handleCloseModal() {
+    let newState = await this.save({showModal: false})
+    this.setState(newState);
+  }
+
+  async closeModal2() {
     let worldMap = this.state.worldMap;
     let position = this.state.position;
     worldMap[position[0]][position[1]].attribute.name = "";
-    this.setState({
-      showModal2: false,
-      status: 'free',
-      worldMap: worldMap
-    });
+    let newState = await this.save({showModal2: false, status: 'free', worldMap: worldMap})
+    this.setState(newState);
   }
 
-  closeModal3() {
-    this.setState({
-      showModal3: false,
-      status: 'free'
-    });
+  async closeModal3() {
+    let newState = await this.save({showModal3: false, status: 'free'})
+    this.setState(newState);
   }
 
-  closeModal4() {
-    this.setState({
-      showModal4: false
-    });
-  }
-
-  closeModal5() {
-    this.setState({
-      showModal5: false,
-      status: 'free',
-      wakeup: true
-    });
+  async closeModal4() {
+    let newState = await this.save({showModal4: false})
+    this.setState(newState);
   }
 
   getFirstPokemon(attribute) {
@@ -173,7 +191,7 @@ class Game extends Component {
     return obj;
   }
 
-  getFirstCards(attribute) {
+  async getFirstCards(attribute) {
     let cards = this.state.cards;
     for (let i = 0; i < 5; i++) {
       cards.push({name: "attack", attack: 5, cost: 1, description: "5 damages"});
@@ -190,10 +208,12 @@ class Game extends Component {
     for (let i = 0; i < 1; i++) {
       cards.push({name: "healing", healing: 3, cost: 1, description: "get 3 health"});
     }
-    this.setState({cards: cards});
+
+    // 2 save
+    this.setState(await this.save({cards: cards}));
   }
 
-  startGame() {
+  async startGame() {
     if (this.state.start) return;
     let worldMap = this.state.worldMap;
     let level = this.state.level;
@@ -344,36 +364,32 @@ class Game extends Component {
 
     let arr = this.state.position;
     arr.push(startRow, startCol);
-    this.setState({
-      level: level,
-      worldMap: worldMap,
-      start: true,
-      position: arr,
-    });
+
+    this.setState(await this.save({level: level, worldMap: worldMap, start: true, position: arr}));
   }
 
-  endGameDirectly() {
+  async endGameDirectly() {
     this.setState({
       position: emptyArray(this.state.position),
       cards: emptyArray(this.state.cards),
       color: emptyArray(this.state.color),
       allPokemon: emptyArray(this.state.allPokemon)
     });
-    this.setState(startStatus);
+    this.setState(await this.save({startStatus}));
   }
 
-  lose() {
+  async lose() {
     this.setState({
       position: emptyArray(this.state.position),
       cards: emptyArray(this.state.cards),
       color: emptyArray(this.state.color),
       allPokemon: emptyArray(this.state.allPokemon)
     });
-    this.setState(startStatus);
+    this.setState(await this.save({startStatus}));
     window.alert("Try next time!")
   }
 
-  endGame() {
+  async endGame() {
     if (!this.state.start) return;
     let result = window.confirm("Are you sure to end this round")
     if (result) {
@@ -383,15 +399,13 @@ class Game extends Component {
         color: emptyArray(this.state.color),
         allPokemon: emptyArray(this.state.allPokemon)
       });
-      this.setState(startStatus);
+      this.setState(await this.save({startStatus}));
     } else {
       return;
     }
   }
 
-
-
-  move(row, col) {
+  async move(row, col) {
     if (!this.state.start) return;
     let rowOfMap = this.state.row;
     let colOfMap = this.state.col;
@@ -408,10 +422,6 @@ class Game extends Component {
           }
         }
       }
-      this.setState({
-        position: arr,
-        worldMap: obj
-      });
       if (this.state.worldMap[row][col].attribute.name === "pokemon") {
         this.setState({status: "fight"});
       } else if (this.state.worldMap[row][col].attribute.name === "end") {
@@ -424,10 +434,13 @@ class Game extends Component {
       } else {
         this.setState({status: 'free'})
       }
+
+      let newObj = await this.save(this.state)
+      this.setState(newObj);
     } else return;
   }
 
-  win() {
+  async win() {
     let worldMap = this.state.worldMap;
     let position = this.state.position;
     worldMap[position[0]][position[1]].attribute.name = "";
@@ -442,16 +455,16 @@ class Game extends Component {
       arr.push(this.state.cards[getRandomInt(this.state.cards.length)]);
       random --;
     }
-    this.setState({
+    this.setState(await this.save({
       worldMap: worldMap,
       status: "free",
       showModal4: true,
       money: money,
       cardsAfterWin: arr
-    });
+    }));
   }
 
-  addBall() {
+  async addBall() {
     let money = this.state.money;
     if (money >= 5) {
       let newArr = this.state.cards;
@@ -460,15 +473,15 @@ class Game extends Component {
       money -= 5;
       newArr.push({name: "Pokemon Ball", ball: true, cost: 3, description: 'Help catch a pokemon'});
       arrCan.phy.push({name: "Pokemon Ball", ball: true, cost: 3, description: 'Help catch a pokemon'})
-      this.setState({
+      this.setState(await this.save({
         cards: newArr,
         money: money,
         cardsCanBeUsed: arrCan
-      })
+      }))
     }
   }
 
-  addPack() {
+  async addPack() {
     let money = this.state.money;
     if (money >= 10) {
       let newArr = this.state.cards;
@@ -477,41 +490,44 @@ class Game extends Component {
       money -= 10;
       newArr.push({name: "Pokemon Healthpack", healing: 10, cost: 3, description: 'Add 10 HP'});
       arrCan.phy.push({name: "Pokemon Healthpack", healing: 10, cost: 3, sdescription: 'Add 10 HP'});
-      this.setState({
+      this.setState(await this.save({
         cards: newArr,
         money: money,
         cardsCanBeUsed: arrCan
-      });
+      }));
     }
   }
 
-  addCard(index) {
+  async addCard(index) {
     let arrCards = this.state.cards;
     let arrCardsCanBeused = this.state.cardsCanBeUsed;
     let arrAfterWin = this.state.cardsAfterWin;
     let card = arrAfterWin.splice(index, 1);
     arrCards.push(card[0]);
     arrCardsCanBeused.phy.push(card[0]);
-    this.setState({
+    this.setState(await this.save({
       cards: arrCards,
       cardsAfterWin: arrAfterWin,
       cardsCanBeUsed: arrCardsCanBeused
-    });
+    }));
   }
 
-  chooseFirstPokemon(attribute) {
-    let obj = this.getFirstPokemon(attribute);
+  async chooseFirstPokemon(attribute) {
+    let obj = await this.getFirstPokemon(attribute);
     let arrAllPokemon = this.state.allPokemon;
+
     arrAllPokemon.push(obj);
-    this.getFirstCards(attribute);
-    this.setState({
+    await this.getFirstCards(attribute);
+
+    // 1 save
+    this.setState(await this.save({
       pokemon: obj,
       allPokemon: arrAllPokemon,
       showModal5: false
-    });
+    }));
   }
 
-  changePokemon(index) {
+  async changePokemon(index) {
     if (this.state.status !== "free") return;
     let arr = this.state.cards;
     let cardsCanBeUsed = this.state.cardsCanBeUsed;
@@ -528,39 +544,39 @@ class Game extends Component {
       arrColor[i] = "white"
     }
     arrColor[index] = "blue";
-    this.setState({
+    this.setState(await this.save({
       pokemon: this.state.allPokemon[index],
       cards: arr,
       color: arrColor
-    });
+    }));
   }
 
-  choice2A1() {
+  async choice2A1() {
     let money = this.state.money;
     money += 10;
-    this.setState({money: money});
+    this.setState(await this.save({money: money}));
   }
 
-  choice3A1() {
+  async choice3A1() {
     let money = this.state.money;
     money += 10;
-    this.setState({money: money});
+    this.setState(await this.save({money: money}));
   }
 
-  choice4A1() {
+  async choice4A1() {
     let money = this.state.money;
     money += 10;
-    this.setState({money: money});
+    this.setState(await this.save({money: money}));
   }
 
-  choice4B1() {
+  async choice4B1() {
     let money = this.state.money;
     money += 10;
-    this.setState({money: money});
+    this.setState(await this.save({money: money}));
   }
 
-  choice6A1() {
-    this.setState({money: 0});
+  async choice6A1() {
+    this.setState( this.save({money: 0}));
   }
 
   render() {
@@ -568,7 +584,7 @@ class Game extends Component {
     if (!this.state.start) {
       return <div>
         <div className="start-and-end">
-          <button className="start-game" onClick={() => this.startGame()}>Start</button>
+          <button className="start-game" onClick={async () => await this.startGame()}>Start</button>
           <button className="end-game" onClick={() => this.props.logout()}>Logout</button>
         </div>
         <div className="Before-Start">Please start game.</div>
@@ -580,7 +596,7 @@ class Game extends Component {
           playStatus={Sound.status.PLAYING}
         />
         <div className="start-and-end">
-          <button className="start-game" onClick={() => this.startGame()}>Start</button>
+          <button className="start-game" onClick={async () => await this.startGame()}>Start</button>
           <button className="end-game" onClick={() => this.endGame()}>End</button>
         </div>
         <div className='info'>
@@ -608,7 +624,9 @@ class Game extends Component {
           position={this.state.position}
           move={(i ,j) => this.move(i, j)}/>
           :
-          <Fight worldMap={this.state.worldMap}
+          <Fight
+            save={(obj) => this.save(obj)}
+            worldMap={this.state.worldMap}
             position={this.state.position}
             win={() => this.win()}
             lose={() => this.lose()}
@@ -629,9 +647,9 @@ class Game extends Component {
                 <div className='firstText'>
                   Last night before starting your Pokemon journey, what should you do?
                 </div>
-                <button className='choiceA' onClick={() => this.chooseFirstPokemon("fire")}>Sleep early</button>
-                <button className='choiceB' onClick={() => this.chooseFirstPokemon("water")}>Watch Pokemon-related TV shows</button>
-                <button className='choiceD' onClick={() => this.chooseFirstPokemon("grass")}>Read Pokemon-related books</button>
+                <button className='choiceA' onClick={async () => await this.chooseFirstPokemon("fire")}>Sleep early</button>
+                <button className='choiceB' onClick={async () => await this.chooseFirstPokemon("water")}>Watch Pokemon-related TV shows</button>
+                <button className='choiceD' onClick={async () => await this.chooseFirstPokemon("grass")}>Read Pokemon-related books</button>
               </ReactModal>
             </div>
             : ''

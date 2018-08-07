@@ -42,7 +42,7 @@ class Fight extends Component {
     else return -1;
   }
 
-  nextRound() {
+  async nextRound() {
     let pokemon = this.state.pokemon;
     let cardsInHand = this.state.cardsInHand;
     let cardsLeft = this.state.cardsLeft;
@@ -168,9 +168,10 @@ class Fight extends Component {
       cardsInHand: cardsInHand
     });
     this.enemy();
+    this.setState(await this.props.save(this.state))
   }
 
-  enemy() {
+  async enemy() {
     let worldMap = this.state.worldMap;
     let enemyInformation = worldMap[this.state.position[0]][this.state.position[1]].attribute;
     let random = getRandomInt(4);
@@ -183,10 +184,10 @@ class Fight extends Component {
     if (random === 1) {
       enemyInformation.defence = getRandomInt(5)+1;
     }
-    this.setState({worldMap: worldMap});
+    this.setState(await this.save({worldMap: worldMap}));
   }
 
-  drop() {
+  async drop() {
       let obj = this.state.pokemon;
       let costs = this.state.costHave;
 
@@ -275,10 +276,12 @@ class Fight extends Component {
           })
         }
       }
+
+    this.setState(await this.props.save(this.state))
   }
 
-  drag(cardsInHand) {
-    this.setState({cardsHold: cardsInHand})
+  async drag(cardsInHand) {
+    this.setState(await this.props.save({cardsHold: cardsInHand}))
   }
 
   render() {
