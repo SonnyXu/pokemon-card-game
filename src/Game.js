@@ -98,7 +98,13 @@ let startStatus = {
   allPokemon: [],
   money: 0,
   wakeup: false,
-  color: ['blue']
+  color: ['blue'],
+  cardsHold: {},
+  cardsLeft: [],
+  cardsInHand: [],
+  cardsUsed: [],
+  costHave: 3,
+  costMax: 3
 }
 
 class Game extends Component {
@@ -120,7 +126,7 @@ class Game extends Component {
 
   async save(obj) {
     console.log("I'm saving start")
-    
+
     this.setState(obj)
     console.log('Done setting the state.')
     await fetch('http://localhost:1337/save', {
@@ -179,7 +185,7 @@ class Game extends Component {
     return obj;
   }
 
-  getFirstCards(attribute) {
+  async getFirstCards(attribute) {
     let cards = this.state.cards;
     for (let i = 0; i < 5; i++) {
       cards.push({name: "attack", attack: 5, cost: 1, description: "5 damages"});
@@ -197,7 +203,7 @@ class Game extends Component {
       cards.push({name: "healing", healing: 3, cost: 1, description: "get 3 health"});
     }
 
-    this.save({cards: cards});
+    await this.save({cards: cards});
   }
 
   startGame() {
@@ -499,7 +505,7 @@ class Game extends Component {
     })
   }
 
-  chooseFirstPokemon(attribute) {
+  async chooseFirstPokemon(attribute) {
     let obj = this.getFirstPokemon(attribute);
     let arrAllPokemon = this.state.allPokemon;
 
@@ -507,7 +513,7 @@ class Game extends Component {
     this.getFirstCards(attribute);
 
     // 1 save
-    this.save({
+    await this.save({
       pokemon: obj,
       allPokemon: arrAllPokemon,
       showModal5: false
@@ -567,6 +573,18 @@ class Game extends Component {
   }
 
   render() {
+    let cardsInHand = [];
+    let cards = this.state.cards;
+    let cardsLeft = [];
+    for (let i = 0; i < cards.length; i++) {
+      cardsLeft.push(cards[i]);
+    }
+    for (let i = 0; i < 4; i++) {
+      let j = cardsLeft.splice(getRandomInt(cardsLeft.length), 1)
+      cardsInHand.push(j[0])
+    }
+
+
     console.log(this.state);
     if (!this.state.start) {
       return <div>
@@ -620,6 +638,12 @@ class Game extends Component {
             pokemon={this.state.pokemon}
             cards={this.state.cards}
             allPokemon = {this.state.allPokemon}
+            cardsHold={this.state.cardsHold}
+            cardsLeft={cardsLeft}
+            cardsUsed={this.state.cardsUsed}
+            cardsInHand={cardsInHand}
+            costHave={this.state.costHave}
+            costMax={this.state.costMax}
             color={this.state.color}/>
           }
           {

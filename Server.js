@@ -88,7 +88,7 @@ app.post('/save', function(req, res) {
           user[key] = req.body[key]
         }
         user.save()
-        .then(user => res.json(req.body))
+        .then(user => res.status(200))
       })
     })
   } else {
