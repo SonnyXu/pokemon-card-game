@@ -14,13 +14,13 @@ class App extends Component {
   }
 
   componentDidMount () {
-    const result = localStorage.getItem('token');
-    if (result) {
+    const token = localStorage.getItem('token');
+    if (token !== 'undefined' && token) {
       fetch('http://localhost:1337/checktoken', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authentication' : 'bearer ' + result
+          'Authentication' : 'bearer ' + token
         }
       })
       .then(res => res.json())

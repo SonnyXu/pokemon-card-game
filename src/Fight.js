@@ -42,7 +42,7 @@ class Fight extends Component {
     else return -1;
   }
 
-  async nextRound() {
+  nextRound() {
     let pokemon = this.state.pokemon;
     let cardsInHand = this.state.cardsInHand;
     let cardsLeft = this.state.cardsLeft;
@@ -58,16 +58,16 @@ class Fight extends Component {
       enemyInformation.health.currentHealth -= pokemon.attack.phy - enemyInformation.defence;
     }
     if (this.compareMag(enemyAttr, myAttr) > 0) {
-      if (enemyInformation.attack.mag > 2*pokemon.attack.mag) {
-        pokemon.health.currentHealth -= enemyInformation.attack.mag - 2*pokemon.attack.mag;
+      if (enemyInformation.attack.mag > 2 *pokemon.attack.mag) {
+        pokemon.health.currentHealth -= enemyInformation.attack.mag - 2 * pokemon.attack.mag;
       } else {
-        enemyInformation.health.currentHealth -= 2*pokemon.attack.mag - enemyInformation.attack.mag
+        enemyInformation.health.currentHealth -= 2 * pokemon.attack.mag - enemyInformation.attack.mag
       }
     } else if (this.compareMag(enemyAttr, myAttr) < 0) {
-      if (2*enemyInformation.attack.mag > pokemon.attack.mag) {
-        pokemon.health.currentHealth -= 2*enemyInformation.attack.mag - pokemon.attack.mag;
+      if (2 * enemyInformation.attack.mag > pokemon.attack.mag) {
+        pokemon.health.currentHealth -= 2 * enemyInformation.attack.mag - pokemon.attack.mag;
       } else {
-        enemyInformation.health.currentHealth -= pokemon.attack.mag - 2*enemyInformation.attack.mag
+        enemyInformation.health.currentHealth -= pokemon.attack.mag - 2 * enemyInformation.attack.mag
       }
     } else {
       if (enemyInformation.attack.mag > pokemon.attack.mag) {
@@ -77,18 +77,13 @@ class Fight extends Component {
       }
     }
 
-    this.setState({
-      pokemon: pokemon,
-      worldMap: worldMap
-    })
-
     enemyInformation.attack.phy = 0;
     enemyInformation.attack.mag = 0;
     enemyInformation.defence = 0;
     pokemon.attack.phy = 0;
     pokemon.attack.mag = 0;
     pokemon.defence = 0;
-    this.setState({
+    this.props.save({
       worldMap: worldMap,
       pokemon: pokemon
     });
@@ -100,7 +95,7 @@ class Fight extends Component {
       this.props.win();
       return;
     }
-    this.setState({costHave: this.state.costMax});
+    this.props.save({costHave: this.state.costMax});
 
     if (this.state.cardsLeft.length < 2) {
       if (this.state.cardsUsed.length === 0) {
@@ -112,7 +107,7 @@ class Fight extends Component {
           let arr = this.state.cardsLeft;
           let arrInHand = this.state.cardsInHand;
           arrInHand.push(arr.pop());
-          this.setState({
+          this.props.save({
             cardsInHand: arrInHand,
             cardsLeft: arr
           });
@@ -127,7 +122,7 @@ class Fight extends Component {
         if (arrLeft.length === 1) {
           arrInHand.push(arrLeft.pop());
           arrInHand.push(arrUsed.pop());
-          this.setState({
+          this.props.save({
             cardsLeft: arrLeft,
             cardsInHand: arrInHand,
             cardsUsed: arrUsed
@@ -136,7 +131,7 @@ class Fight extends Component {
           return;
         } else {
           arrInHand.push(arrUsed.pop());
-          this.setState({
+          this.props.save({
             cardsLeft: arrLeft,
             cardsInHand: arrInHand,
             cardsUsed: arrUsed
@@ -152,7 +147,7 @@ class Fight extends Component {
           let arr = arrUsed.splice(getRandomInt(arrUsed.length), 1)
           arrLeft.push(arr[0]);
         }
-        this.setState({
+        this.props.save({
           cardsLeft: arrLeft,
           cardsInHand: arrInHand,
           cardsUsed: arrUsed
@@ -163,15 +158,14 @@ class Fight extends Component {
       let j = cardsLeft.splice(getRandomInt(cardsLeft.length), 1)
       cardsInHand.push(j[0])
     }
-    this.setState({
+    this.props.save({
       cardsLeft: cardsLeft,
       cardsInHand: cardsInHand
     });
     this.enemy();
-    this.setState(await this.props.save(this.state))
   }
 
-  async enemy() {
+  enemy() {
     let worldMap = this.state.worldMap;
     let enemyInformation = worldMap[this.state.position[0]][this.state.position[1]].attribute;
     let random = getRandomInt(4);
@@ -184,104 +178,104 @@ class Fight extends Component {
     if (random === 1) {
       enemyInformation.defence = getRandomInt(5)+1;
     }
-    this.setState(await this.save({worldMap: worldMap}));
+    this.props.save({worldMap: worldMap});
   }
 
-  async drop() {
-      let obj = this.state.pokemon;
-      let costs = this.state.costHave;
+  drop() {
+    let obj = this.state.pokemon;
+    let costs = this.state.costHave;
 
-      if (this.state.cardsHold.cost) {
-        if (costs < this.state.cardsHold.cost) {
-          return;
-        }
-        costs -= this.state.cardsHold.cost;
+    if (this.state.cardsHold.cost) {
+      if (costs < this.state.cardsHold.cost) {
+        return;
       }
-      if (this.state.cardsHold.attack) {
-        obj.attack.phy += this.state.cardsHold.attack;
+      costs -= this.state.cardsHold.cost;      
+    }
+    if (this.state.cardsHold.attack) {
+      obj.attack.phy += this.state.cardsHold.attack;      
+    }
+    if (this.state.cardsHold.fire) {
+      obj.attack.mag += this.state.cardsHold.fire;
+    }
+    if (this.state.cardsHold.water) {
+      obj.attack.mag += this.state.cardsHold.water;
+    }
+    if (this.state.cardsHold.grass) {
+      obj.attack.mag += this.state.cardsHold.grass;
+    }
+    if (this.state.cardsHold.defence) {
+      obj.defence += this.state.cardsHold.defence;      
+    }
+    if (this.state.cardsHold.healing) {
+      obj.health.currentHealth += this.state.cardsHold.healing;
+      if (obj.health.currentHealth >= this.state.pokemon.health.maxHealth) {
+        obj.health.currentHealth = this.state.pokemon.health.maxHealth;
       }
-      if (this.state.cardsHold.fire) {
-        obj.attack.mag += this.state.cardsHold.fire;
-      }
-      if (this.state.cardsHold.water) {
-        obj.attack.mag += this.state.cardsHold.water;
-      }
-      if (this.state.cardsHold.grass) {
-        obj.attack.mag += this.state.cardsHold.grass;
-      }
-      if (this.state.cardsHold.defence) {
-        obj.defence += this.state.cardsHold.defence;
-      }
-      if (this.state.cardsHold.healing) {
-        obj.health.currentHealth += this.state.cardsHold.healing;
-        if (obj.health.currentHealth >= this.state.pokemon.health.maxHealth) {
-          obj.health.currentHealth = this.state.pokemon.health.maxHealth;
-        }
-      }
-      if (this.state.cardsHold.ball) {
-        let currentHealth = this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.currentHealth;
-        let maxHealth = this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.maxHealth;
-        let possibility = Math.pow(currentHealth/maxHealth, 1/3);
-        if (Math.random() > possibility) {
-          let arr = this.state.allPokemon;
-          arr.push({
-            level: {
-              num: 1,
-              maxExp: 100,
-              currentExp: 0
-            },
-            health: {
-              maxHealth: this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.maxHealth,
-              currentHealth: this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.maxHealth,
-            },
-            attack: {
-              phy: 0,
-              mag: 0
-            },
-            defence: 0,
-            attribute: this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attribute
-          });
-          let arrColor = this.state.color;
-          arrColor.push("white")
-          this.setState({allPokemon: arr, color: arrColor});
-          this.props.win();
-        }
-      }
-      let cardsInHand = this.state.cardsInHand;
-      let cardsUsed = this.state.cardsUsed;
-      let cardsLeft = this.state.cardsLeft;
-      if (this.state.cardsHold.getCards) {
-        let num = this.state.cardsHold.getCards;
-        while (num > 0) {
-          let getCards = cardsLeft.pop();
-          cardsInHand.push(getCards);
-          num --;
-        }
-      }
-      this.setState({
-        pokemon: obj,
-        costHave: costs,
-        cardsInHand: cardsInHand,
-        cardsLeft: cardsLeft
-      });
+    }
+    if (this.state.cardsHold.ball) {
+      let currentHealth = this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.currentHealth;
+      let maxHealth = this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.maxHealth;
+      let possibility = Math.pow(currentHealth/maxHealth, 1/3);
+      if (Math.random() > possibility) {
+        let arr = this.state.allPokemon;
+        arr.push({
+          level: {
+            num: 1,
+            maxExp: 100,
+            currentExp: 0
+          },
+          health: {
+            maxHealth: this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.maxHealth,
+            currentHealth: this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.maxHealth,
+          },
+          attack: {
+            phy: 0,
+            mag: 0
+          },
+          defence: 0,
+          attribute: this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attribute
+        });
 
-      for (let i = 0; i < cardsInHand.length; i++) {
-        if (cardsInHand[i] === this.state.cardsHold) {
-          let cardUsed = cardsInHand.splice(i, 1);
-          cardsUsed.push(cardUsed[0]);
-          this.setState({
-            cardsInHand: cardsInHand,
-            cardsUsed: cardsUsed,
-            cardsHold: {}
-          })
-        }
+        let arrColor = this.state.color;
+        arrColor.push("white")
+        this.props.save({allPokemon: arr, color: arrColor});
+        this.props.win();
       }
+    }
+    let cardsInHand = this.state.cardsInHand;
+    let cardsUsed = this.state.cardsUsed;
+    let cardsLeft = this.state.cardsLeft;
+    if (this.state.cardsHold.getCards) {
+      let num = this.state.cardsHold.getCards;
+      while (num > 0) {
+        let getCards = cardsLeft.pop();
+        cardsInHand.push(getCards);
+        num --;
+      }
+    }
+    
+    this.props.save({
+      pokemon: obj,
+      costHave: costs,
+      cardsInHand: cardsInHand,
+      cardsLeft: cardsLeft
+    });
 
-    this.setState(await this.props.save(this.state))
+    for (let i = 0; i < cardsInHand.length; i++) {
+      if (cardsInHand[i] === this.state.cardsHold) {
+        let cardUsed = cardsInHand.splice(i, 1);
+        cardsUsed.push(cardUsed[0]);
+        this.props.save({
+          cardsInHand: cardsInHand,
+          cardsUsed: cardsUsed,
+          cardsHold: {}
+        })
+      }
+    }
   }
 
-  async drag(cardsInHand) {
-    this.setState(await this.props.save({cardsHold: cardsInHand}))
+  drag(cardsInHand) {
+    this.props.save({cardsHold: cardsInHand});
   }
 
   render() {

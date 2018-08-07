@@ -26,7 +26,7 @@ app.post('/login', function(req, res) {
     User.findOne({username: req.body.username}, function(err, result) {
       if (err) console.log(err);
       if (!result) {
-        res.json({err: `Username not found!, ${req.body.username}`});
+        res.json({err: `Username not found!`});
       } else {
         if (result.password === req.body.password) {
           jwt.sign({id: result._id, username: result.username, password: result.password}, process.env.JWT_SECRET, { expiresIn: '1d' }, function(err, token) {
