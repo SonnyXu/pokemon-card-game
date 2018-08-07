@@ -20,6 +20,7 @@ class WorldMap extends Component {
             return <Area area={this.state.worldMap[i][j]}
               position={i === this.state.position[0] && j === this.state.position[1]}
               move={() => this.props.move(i,j)}
+              keyMove={(e) => this.checkDirection(e)}
             />
           })}
         </div>)
