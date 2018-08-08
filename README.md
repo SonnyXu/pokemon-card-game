@@ -3,9 +3,9 @@
 
 - **Update to Version 1.2.0**
 
-  Player now can save their games.
+  Players now can save their games.
 
-  We now use the npm package jsonwebtoken insteand of passport.
+  We switched to using jsonwebtoken insteand of passport.
 
 - **Update to Version 1.1.0**
 
