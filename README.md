@@ -1,23 +1,24 @@
 # pokemon-card-game
+### Updates and version info ### 
 
-Update to Version 1.2.0
+- **Update to Version 1.2.0**
 
 Player now can save their games.
 
-Use jsonwebtoken insteand of passport.
+We now use the npm package jsonwebtoken insteand of passport.
 
-Update to Version 1.1.0
+- **Update to Version 1.1.0**
 
-Player has to register first before they play the game.
+Player now has to register first before starting to play the game.
 
-Update to Version 1.0.2
+- **Update to Version 1.0.2**
 
-Clean up the code and optimize the algorithm.
+Cleaned up the code and optimized algorithms.
 
-Update to Version 1.0.1
+- **Update to Version 1.0.1**
 
-Fix the possibility of catching pokemon.
+Fixed possibility of catching pokemons.
 
-Add some information on Info Box.
+Added extra information on Info Box.
 
-Fix the problem when switching pokemon during the battle.
+Fixed bugs on switching pokemon during the battle.
