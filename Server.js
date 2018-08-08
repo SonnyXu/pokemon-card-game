@@ -84,18 +84,17 @@ app.post('/save', function(req, res) {
   let tokenArr = req.headers.authentication.split(' ')
   if (tokenArr[0] === 'bearer' && typeof tokenArr[1] === 'string') {
     jwt.verify(tokenArr[1], process.env.JWT_SECRET, function (err, userInfo) {
-      User.findOne({username: userInfo.username}, function(err, user) {
-        for (let key in req.body) {
-          user[key] = req.body[key]
-        }
-        user.save()
-        .then(user => res.json({status: "success", result: user.start}))
+      User.findOneAndUpdate({username: userInfo.username}, req.body, function(err, user) {
+        console.log("oaloalaoalaoalaoalaolao",req.body);
+        if (err) res.json({'error': err})
+        else res.json({status: "success"})
       })
     })
   } else {
     res.sendStatus(401);
   }
 })
+
 
 
 app.listen(1337, function() {

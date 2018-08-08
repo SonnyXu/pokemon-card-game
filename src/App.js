@@ -9,7 +9,8 @@ class App extends Component {
       currentPage: "login",
       username: "",
       password: "",
-      info: null
+      info: null,
+      fightInfo: null
     }
   }
 
@@ -117,7 +118,17 @@ class App extends Component {
       .then((resp) => {
         if (resp.token) {
           localStorage.setItem('token', resp.token);
-          this.setState({info: resp.info});
+          this.setState({
+            info: resp.info,
+            fightInfo: {
+              cardsLeft: resp.info.cardsLeft,
+              cardsInHand: resp.info.cardsInHand,
+              cardsUsed: resp.info.cardsUsed,
+              costHave: resp.info.costHave,
+              costMax: resp.info.costMax,
+              status: resp.info.status
+            }
+          });
           this.goGame()
         } else {
           window.alert("Incorrect username or password");
@@ -175,7 +186,7 @@ class App extends Component {
         </div>
       </div>
     } else {
-      return <Game logout={() => this.logout()} info={this.state.info}/>
+      return <Game logout={() => this.logout()} info={this.state.info} fightInfo={this.state.fightInfo}/>
     }
   }
 }

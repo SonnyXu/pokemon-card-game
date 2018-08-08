@@ -72,6 +72,9 @@ var userSchema = new mongoose.Schema({
   cardsAfterWin: {
     type: Array,
   },
+  cardsHold: {
+    type: Object,
+  },
   pokemon: {
     type: Object,
   },
@@ -87,8 +90,20 @@ var userSchema = new mongoose.Schema({
   color: {
     type: Array,
   },
-  allCards: {
-    type: Object
+  costHave: {
+    type: Number,
+  },
+  costMax: {
+    type: Number,
+  },
+  cardsUsed: {
+    type: Array,
+  },
+  cardsLeft: {
+    type: Array
+  },
+  cardsInHand: {
+    type: Array
   }
 });
 

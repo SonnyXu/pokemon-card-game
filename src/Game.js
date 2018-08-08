@@ -127,7 +127,7 @@ class Game extends Component {
     .then(resp => {
 
       if (resp.status === "success") {
-        window.alert("saved!")
+        window.alert("game status saved!")
         console.log('saved status', resp.result)
       } else {
         window.alert("Error!");
@@ -614,10 +614,10 @@ class Game extends Component {
           url='http://www.170mv.com/kw/other.web.rc01.sycdn.kuwo.cn/resource/n1/15/99/1879608878.mp3'
           playStatus={Sound.status.PLAYING}
         />
-        <div className="start-and-end">
+        {this.state.status !== 'fight' ? <div className="start-and-end">
           <button className="start-game" onClick={() => this.save()}>Save</button>
           <button className="end-game" onClick={() => this.endGame()}>End</button>
-        </div>
+        </div> : <div></div>}
         <div className='info'>
           <h2>Status</h2>
           <div className="money"><img alt="" height="40px" width="40px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNFEfQpOgik7rqwk-vSAi_0JRuMCdkF6o4E8HXpAwa8iNEPQNfYQ"/> {this.state.money}</div>
@@ -650,7 +650,10 @@ class Game extends Component {
             pokemon={this.state.pokemon}
             cards={this.state.cards}
             allPokemon = {this.state.allPokemon}
-            color={this.state.color}/>
+            color={this.state.color}
+            save={() => this.save()}
+            fightInfo={this.props.fightInfo}
+          />
           }
           {
             this.state.wakeup === false ?

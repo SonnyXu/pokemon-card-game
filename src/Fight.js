@@ -18,27 +18,72 @@ class Fight extends Component {
       let j = cardsLeft.splice(getRandomInt(cardsLeft.length), 1)
       cardsInHand.push(j[0])
     }
-    this.state = {
-      worldMap: this.props.worldMap,
-      position: this.props.position,
-      pokemon: this.props.pokemon,
-      allPokemon: this.props.allPokemon,
-      cards: cards,
-      cardsHold: {},
-      cardsLeft: cardsLeft,
-      cardsInHand: cardsInHand,
-      cardsUsed: [],
-      costHave: 3,
-      costMax: 3,
-      color: this.props.color
+
+    if (this.props.fightInfo && this.props.fightInfo.status === 'fight') {
+      let obj1 = {
+        worldMap: this.props.worldMap,
+        position: this.props.position,
+        pokemon: this.props.pokemon,
+        allPokemon: this.props.allPokemon,
+        cards: cards,
+        cardsHold: {},
+        color: this.props.color
+      }
+      let obj2 = this.props.fightInfo;
+      this.state = Object.assign({}, obj1, obj2);
+      this.props.fightInfo.status = null;
+    } else {
+      this.state = {
+        worldMap: this.props.worldMap,
+        position: this.props.position,
+        pokemon: this.props.pokemon,
+        allPokemon: this.props.allPokemon,
+        cards: cards,
+        cardsHold: {},
+
+        //need saving
+        cardsLeft: cardsLeft,
+        cardsInHand: cardsInHand,
+        cardsUsed: [],
+        costHave: 3,
+        costMax: 3,
+
+        color: this.props.color
+      }
     }
+  }
+
+  saveFightStatus() {
+    fetch('http://localhost:1337/save', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authentication': 'bearer ' + localStorage.getItem('token')
+      },
+      body: JSON.stringify(this.state)
+    })
+    .then((res) => res.json())
+    .then(resp => {
+      if (resp.status === "success") {
+        window.alert("fight status saved!")
+        console.log('saved status', resp.result)
+        this.props.save()
+      } else {
+        window.alert("Error!");
+      }
+    })
+    .catch((err) => {
+      // network error
+      console.log('error', err)
+    })
+    console.log('Done saving before return')
   }
 
   compareMag(enemyAttr, myAttr) {
     if (enemyAttr === myAttr) return 0;
     else if ((myAttr === "fire" && enemyAttr === "grass")
-            ||(myAttr === "water" && enemyAttr === "fire")
-            ||(myAttr === "grass" && enemyAttr === "water")) return 1;
+    ||(myAttr === "water" && enemyAttr === "fire")
+    ||(myAttr === "grass" && enemyAttr === "water")) return 1;
     else return -1;
   }
 
@@ -187,94 +232,94 @@ class Fight extends Component {
   }
 
   drop() {
-      let obj = this.state.pokemon;
-      let costs = this.state.costHave;
+    let obj = this.state.pokemon;
+    let costs = this.state.costHave;
 
-      if (this.state.cardsHold.cost) {
-        if (costs < this.state.cardsHold.cost) {
-          return;
-        }
-        costs -= this.state.cardsHold.cost;
+    if (this.state.cardsHold.cost) {
+      if (costs < this.state.cardsHold.cost) {
+        return;
       }
-      if (this.state.cardsHold.attack) {
-        obj.attack.phy += this.state.cardsHold.attack;
+      costs -= this.state.cardsHold.cost;
+    }
+    if (this.state.cardsHold.attack) {
+      obj.attack.phy += this.state.cardsHold.attack;
+    }
+    if (this.state.cardsHold.fire) {
+      obj.attack.mag += this.state.cardsHold.fire;
+    }
+    if (this.state.cardsHold.water) {
+      obj.attack.mag += this.state.cardsHold.water;
+    }
+    if (this.state.cardsHold.grass) {
+      obj.attack.mag += this.state.cardsHold.grass;
+    }
+    if (this.state.cardsHold.defence) {
+      obj.defence += this.state.cardsHold.defence;
+    }
+    if (this.state.cardsHold.healing) {
+      obj.health.currentHealth += this.state.cardsHold.healing;
+      if (obj.health.currentHealth >= this.state.pokemon.health.maxHealth) {
+        obj.health.currentHealth = this.state.pokemon.health.maxHealth;
       }
-      if (this.state.cardsHold.fire) {
-        obj.attack.mag += this.state.cardsHold.fire;
+    }
+    if (this.state.cardsHold.ball) {
+      let currentHealth = this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.currentHealth;
+      let maxHealth = this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.maxHealth;
+      let possibility = Math.pow(currentHealth/maxHealth, 1/3);
+      if (Math.random() > possibility) {
+        let arr = this.state.allPokemon;
+        arr.push({
+          level: {
+            num: 1,
+            maxExp: 100,
+            currentExp: 0
+          },
+          health: {
+            maxHealth: this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.maxHealth,
+            currentHealth: this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.maxHealth,
+          },
+          attack: {
+            phy: 0,
+            mag: 0
+          },
+          defence: 0,
+          attribute: this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attribute
+        });
+        let arrColor = this.state.color;
+        arrColor.push("white")
+        this.setState({allPokemon: arr, color: arrColor});
+        this.props.win();
       }
-      if (this.state.cardsHold.water) {
-        obj.attack.mag += this.state.cardsHold.water;
+    }
+    let cardsInHand = this.state.cardsInHand;
+    let cardsUsed = this.state.cardsUsed;
+    let cardsLeft = this.state.cardsLeft;
+    if (this.state.cardsHold.getCards) {
+      let num = this.state.cardsHold.getCards;
+      while (num > 0) {
+        let getCards = cardsLeft.pop();
+        cardsInHand.push(getCards);
+        num --;
       }
-      if (this.state.cardsHold.grass) {
-        obj.attack.mag += this.state.cardsHold.grass;
-      }
-      if (this.state.cardsHold.defence) {
-        obj.defence += this.state.cardsHold.defence;
-      }
-      if (this.state.cardsHold.healing) {
-        obj.health.currentHealth += this.state.cardsHold.healing;
-        if (obj.health.currentHealth >= this.state.pokemon.health.maxHealth) {
-          obj.health.currentHealth = this.state.pokemon.health.maxHealth;
-        }
-      }
-      if (this.state.cardsHold.ball) {
-        let currentHealth = this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.currentHealth;
-        let maxHealth = this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.maxHealth;
-        let possibility = Math.pow(currentHealth/maxHealth, 1/3);
-        if (Math.random() > possibility) {
-          let arr = this.state.allPokemon;
-          arr.push({
-            level: {
-              num: 1,
-              maxExp: 100,
-              currentExp: 0
-            },
-            health: {
-              maxHealth: this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.maxHealth,
-              currentHealth: this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.maxHealth,
-            },
-            attack: {
-              phy: 0,
-              mag: 0
-            },
-            defence: 0,
-            attribute: this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attribute
-          });
-          let arrColor = this.state.color;
-          arrColor.push("white")
-          this.setState({allPokemon: arr, color: arrColor});
-          this.props.win();
-        }
-      }
-      let cardsInHand = this.state.cardsInHand;
-      let cardsUsed = this.state.cardsUsed;
-      let cardsLeft = this.state.cardsLeft;
-      if (this.state.cardsHold.getCards) {
-        let num = this.state.cardsHold.getCards;
-        while (num > 0) {
-          let getCards = cardsLeft.pop();
-          cardsInHand.push(getCards);
-          num --;
-        }
-      }
-      this.setState({
-        pokemon: obj,
-        costHave: costs,
-        cardsInHand: cardsInHand,
-        cardsLeft: cardsLeft
-      });
+    }
+    this.setState({
+      pokemon: obj,
+      costHave: costs,
+      cardsInHand: cardsInHand,
+      cardsLeft: cardsLeft
+    });
 
-      for (let i = 0; i < cardsInHand.length; i++) {
-        if (cardsInHand[i] === this.state.cardsHold) {
-          let cardUsed = cardsInHand.splice(i, 1);
-          cardsUsed.push(cardUsed[0]);
-          this.setState({
-            cardsInHand: cardsInHand,
-            cardsUsed: cardsUsed,
-            cardsHold: {}
-          })
-        }
+    for (let i = 0; i < cardsInHand.length; i++) {
+      if (cardsInHand[i] === this.state.cardsHold) {
+        let cardUsed = cardsInHand.splice(i, 1);
+        cardsUsed.push(cardUsed[0]);
+        this.setState({
+          cardsInHand: cardsInHand,
+          cardsUsed: cardsUsed,
+          cardsHold: {}
+        })
       }
+    }
   }
 
   drag(cardsInHand) {
@@ -289,34 +334,38 @@ class Fight extends Component {
     let myCurrentHealth = this.state.pokemon.health.currentHealth;
     let myMaxHealth = this.state.pokemon.health.maxHealth
     return <div className='fight'>
-    <div style={{color: 'red'}}><strong>Enemy Information</strong></div>
-    <div className="health"><img alt="" width="30px" height="30px" src="https://www.redcross.org.hk/rcmovement/images/cross.jpg"/> {currentHealth}/{maxHealth}</div>
-    <div className="imageThree">
-      <img alt="" className="images" width="30px" height="30px" src="https://t4.ftcdn.net/jpg/01/28/24/55/240_F_128245586_YohqYp6BYmV3oZIOXIu9FrC0zNr2i0K6.jpg"/>
-      {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.phy}
-      {enemyAttr === "fire" ?
       <div>
-        <img alt="" className="images" width="30px" height="30px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxCAPN7-m6xSUgTlH2cyPPNGDdYZaQNgRMQHVwnFhi1e8rkJed"/>
-        {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+        <button className="start-game" onClick={() => this.saveFightStatus()}>Save</button>
+        <button className="end-game" onClick={() => this.endGame()}>End</button>
       </div>
-      : enemyAttr === "water" ?
-      <div>
-        <img alt="" className="images" width="30px" height="30px" src="http://ohidul.me/wp-content/uploads/10-tips-for-saving-water-in-the-garden-logo-google-and-logos-brilliant-save.jpg"/>
-        {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+      <div style={{color: 'red'}}><strong>Enemy Information</strong></div>
+      <div className="health"><img alt="" width="30px" height="30px" src="https://www.redcross.org.hk/rcmovement/images/cross.jpg"/> {currentHealth}/{maxHealth}</div>
+      <div className="imageThree">
+        <img alt="" className="images" width="30px" height="30px" src="https://t4.ftcdn.net/jpg/01/28/24/55/240_F_128245586_YohqYp6BYmV3oZIOXIu9FrC0zNr2i0K6.jpg"/>
+        {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.phy}
+        {enemyAttr === "fire" ?
+        <div>
+          <img alt="" className="images" width="30px" height="30px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxCAPN7-m6xSUgTlH2cyPPNGDdYZaQNgRMQHVwnFhi1e8rkJed"/>
+          {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+        </div>
+        : enemyAttr === "water" ?
+        <div>
+          <img alt="" className="images" width="30px" height="30px" src="http://ohidul.me/wp-content/uploads/10-tips-for-saving-water-in-the-garden-logo-google-and-logos-brilliant-save.jpg"/>
+          {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+        </div>
+        : enemyAttr === "grass" ?
+        <div>
+          <img alt="" className="images" width="30px" height="30px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyZ0kK72Gz9etb2aYc5qgUPwwopF51f7zrcRbC1pcD6wxy_YEw"/>
+          {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+        </div>
+        : <img alt="" src="#"/>}
+        <img alt="" className="images" width="30px" height="30px" src="http://www.clker.com/cliparts/p/n/W/Y/F/V/base-of-shield-logo-hi.png"/>
+        {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.defence}
       </div>
-      : enemyAttr === "grass" ?
-      <div>
-        <img alt="" className="images" width="30px" height="30px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyZ0kK72Gz9etb2aYc5qgUPwwopF51f7zrcRbC1pcD6wxy_YEw"/>
-        {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
-      </div>
-      : <img alt="" src="#"/>}
-      <img alt="" className="images" width="30px" height="30px" src="http://www.clker.com/cliparts/p/n/W/Y/F/V/base-of-shield-logo-hi.png"/>
-      {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.defence}
-    </div>
-    <br/>
-    <div><strong>My information</strong></div>
-    <div className="health"><img alt="" width="30px" height="30px" src="https://www.redcross.org.hk/rcmovement/images/cross.jpg"/> {myCurrentHealth}/{myMaxHealth}</div>
-    <div className="imageThree"><img alt="" className="images" width="30px" height="30px" src="https://t4.ftcdn.net/jpg/01/28/24/55/240_F_128245586_YohqYp6BYmV3oZIOXIu9FrC0zNr2i0K6.jpg"/>
+      <br/>
+      <div><strong>My information</strong></div>
+      <div className="health"><img alt="" width="30px" height="30px" src="https://www.redcross.org.hk/rcmovement/images/cross.jpg"/> {myCurrentHealth}/{myMaxHealth}</div>
+      <div className="imageThree"><img alt="" className="images" width="30px" height="30px" src="https://t4.ftcdn.net/jpg/01/28/24/55/240_F_128245586_YohqYp6BYmV3oZIOXIu9FrC0zNr2i0K6.jpg"/>
       {this.state.pokemon.attack.phy}
       {myAttr === "fire" ?
       <div>
@@ -347,10 +396,10 @@ class Fight extends Component {
           return <div className="Info" draggable="true" onDrag={() => this.drag(card)} onDragEnd={() => this.drop()}><div>{card.name}: {card.description}</div><div>Cost: {card.cost}</div></div>
         })
       }
-      </div>
-    <br/><button style={{marginBottom: 10}} onClick={() => this.nextRound()}>Next Round</button>
     </div>
-  }
+    <br/><button style={{marginBottom: 10}} onClick={() => this.nextRound()}>Next Round</button>
+  </div>
+}
 }
 
 export default Fight;
