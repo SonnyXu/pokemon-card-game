@@ -9,7 +9,7 @@
 
 - **Update to Version 1.1.0**
 
-  Player now has to register first before starting to play the game.
+  Players now have to register first before starting to play the game.
 
 - **Update to Version 1.0.2**
 
