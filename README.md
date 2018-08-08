@@ -3,22 +3,22 @@
 
 - **Update to Version 1.2.0**
 
-Player now can save their games.
+  Player now can save their games.
 
-We now use the npm package jsonwebtoken insteand of passport.
+  We now use the npm package jsonwebtoken insteand of passport.
 
 - **Update to Version 1.1.0**
 
-Player now has to register first before starting to play the game.
+  Player now has to register first before starting to play the game.
 
 - **Update to Version 1.0.2**
 
-Cleaned up the code and optimized algorithms.
+  Cleaned up the code and optimized algorithms.
 
 - **Update to Version 1.0.1**
 
-Fixed possibility of catching pokemons.
+  Fixed possibility of catching pokemons.
 
-Added extra information on Info Box.
+  Added extra information on Info Box.
 
-Fixed bugs on switching pokemon during the battle.
+  Fixed bugs on switching pokemon during the battle.
