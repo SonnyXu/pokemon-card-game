@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Game from './Game.js';
+import hash from 'object-hash';
 
 class App extends Component {
   constructor(props) {
@@ -7,19 +8,27 @@ class App extends Component {
     this.state = {
       currentPage: "login",
       username: "",
-      password: ""
+      password: "",
+      info: null
     }
   }
 
   componentDidMount () {
-    var result = localStorage.getItem('login');
-    if (result !== "null" && result) {
-      var user = JSON.parse(result)
-      var password = user.password;
-      var username = user.username;
-      if (username && password) {
-        return this.login(username, password);
-      }
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch('http://localhost:1337/checktoken', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authentication' : 'bearer ' + token
+        }
+      })
+      .then(res => res.json())
+      .then(resp => {
+        if (resp && resp.username) {
+          this.login(resp.username, resp.password);
+        }
+      })
     }
   }
 
@@ -60,9 +69,8 @@ class App extends Component {
   }
 
   register() {
-    const username = this.state.username
-    const password = this.state.password
-
+    const username = hash(this.state.username);
+    const password = hash(this.state.password);
     if (username && password) {
       fetch('http://localhost:1337/register', {
         method: 'POST',
@@ -80,7 +88,7 @@ class App extends Component {
         if (resp.username) {
           this.goLogin()
         } else if (resp.err === "repetitve username") {
-          window.alert("repetitve username");
+          window.alert("Username already exist. Pick a different one.");
         }
       })
       .catch((err) => {
@@ -90,7 +98,7 @@ class App extends Component {
     } else {
       alert('Username and password must not be empty!')
       this.goRegister()
-     }
+    }
   }
 
   login(username, password) {
@@ -107,23 +115,19 @@ class App extends Component {
       })
       .then((res) => res.json())
       .then((resp) => {
-            if (resp.username) {
-              localStorage.setItem('login', JSON.stringify({
-                  username: username,
-                  password: password,
-                }))
-              console.log("login", resp);
-              this.goGame()
-            } else {
-              window.alert("Incorrect username or password");
-              this.goLogin();
-            }
-          }
-        )
-        .catch((err) => {
-          // network error
-          console.log('error', err)
-        })
+        if (resp.token) {
+          localStorage.setItem('token', resp.token);
+          this.setState({info: resp.info});
+          this.goGame()
+        } else {
+          window.alert("Incorrect username or password");
+          this.goLogin();
+        }
+      })
+      .catch((err) => {
+        // network error
+        console.log('error', err)
+      })
     } else {
       alert('Username and password must not be empty!')
       this.goLogin()
@@ -131,7 +135,7 @@ class App extends Component {
   }
 
   logout() {
-    localStorage.setItem('login', JSON.stringify(null));
+    localStorage.setItem('token', JSON.stringify(null));
     this.setState({
       currentPage: "login"
     })
@@ -166,12 +170,12 @@ class App extends Component {
           <input type="password" id="password" name="password" value={this.state.password} onChange={(e) => this.passwordChange(e)}/>
         </div>
         <div style={{marginTop: '15px'}}>
-          <button style={{ marginRight: '10px'}} onClick={() => this.login(this.state.username, this.state.password)}>Login</button>
+          <button style={{ marginRight: '10px'}} onClick={() => this.login(hash(this.state.username), hash(this.state.password))}>Login</button>
           <button onClick={() => this.goRegister()}>Go to Register</button>
         </div>
       </div>
     } else {
-      return <Game logout={() => this.logout()}/>
+      return <Game logout={() => this.logout()} info={this.state.info}/>
     }
   }
 }

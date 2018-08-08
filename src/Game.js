@@ -105,7 +105,39 @@ let startStatus = {
 class Game extends Component {
   constructor(props) {
     super(props);
-    this.state = startStatus
+    console.log("Game starting", this.props.info);
+    if (this.props.info.start) {
+      this.state = this.props.info;
+    } else {
+      this.state = startStatus
+    }
+  }
+
+
+  save() {
+    fetch('http://localhost:1337/save', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authentication': 'bearer ' + localStorage.getItem('token')
+      },
+      body: JSON.stringify(this.state)
+    })
+    .then((res) => res.json())
+    .then(resp => {
+
+      if (resp.status === "success") {
+        window.alert("saved!")
+        console.log('saved status', resp.result)
+      } else {
+        window.alert("Error!");
+      }
+    })
+    .catch((err) => {
+      // network error
+      console.log('error', err)
+    })
+    console.log('Done saving before return')
   }
 
   openModal() {
@@ -352,38 +384,41 @@ class Game extends Component {
     });
   }
 
-  endGameDirectly() {
-    this.setState({
+  async endGameDirectly() {
+    await this.setState({
       position: emptyArray(this.state.position),
       cards: emptyArray(this.state.cards),
       color: emptyArray(this.state.color),
-      allPokemon: emptyArray(this.state.allPokemon)
+      allPokemon: emptyArray(this.state.allPokemon),
+      start: false
     });
-    this.setState(startStatus);
+    this.save()
   }
 
-  lose() {
+  async lose() {
     this.setState({
       position: emptyArray(this.state.position),
       cards: emptyArray(this.state.cards),
       color: emptyArray(this.state.color),
       allPokemon: emptyArray(this.state.allPokemon)
     });
-    this.setState(startStatus);
+    await this.setState({start: false});
+    this.save();
     window.alert("Try next time!")
   }
 
-  endGame() {
+  async endGame() {
     if (!this.state.start) return;
     let result = window.confirm("Are you sure to end this round")
     if (result) {
-      this.setState({
+      await this.setState({
         position: emptyArray(this.state.position),
         cards: emptyArray(this.state.cards),
         color: emptyArray(this.state.color),
-        allPokemon: emptyArray(this.state.allPokemon)
+        allPokemon: emptyArray(this.state.allPokemon),
+        start: false
       });
-      this.setState(startStatus);
+      this.save()
     } else {
       return;
     }
@@ -580,7 +615,7 @@ class Game extends Component {
           playStatus={Sound.status.PLAYING}
         />
         <div className="start-and-end">
-          <button className="start-game" onClick={() => this.startGame()}>Start</button>
+          <button className="start-game" onClick={() => this.save()}>Save</button>
           <button className="end-game" onClick={() => this.endGame()}>End</button>
         </div>
         <div className='info'>
