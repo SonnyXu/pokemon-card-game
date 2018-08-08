@@ -1,4 +1,4 @@
-# pokemon-card-game
+# Pokémon Card Game
 ### Updates and version info ### 
 
 - **Update to Version 1.2.0**
