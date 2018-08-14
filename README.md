@@ -2,6 +2,12 @@
 ### Updates and version info ###
 
 
+- **Update to Version 1.3.1**
+
+  Players now can go back to home page during the game, but they will lose data if unsaved.
+
+  Improve the UI during the fight.
+
 - **Update to Version 1.3.0**
 
   Players now have five spots to save their games.

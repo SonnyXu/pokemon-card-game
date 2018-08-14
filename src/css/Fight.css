@@ -3,7 +3,7 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    margin-top: 20px
+    padding-top: 80px;
 }
 
 .cards-in-hand {
@@ -29,9 +29,10 @@
   padding: 30px;
 }
 
-.images {
-  padding-left: 60px;
+h2.ui.header.images {
+  flex: 1;
 }
+
 
 .costs {
   padding-left: 20px;
@@ -40,7 +41,7 @@
 }
 
 .imageThree {
-  padding-right: 90px;
+  width: 600px;
   display: flex;
 }
 

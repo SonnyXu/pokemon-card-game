@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Card, Icon, Image } from 'semantic-ui-react'
 import './css/Card.css'
 
-class Card extends Component {
+class Cards extends Component {
 
   render() {
     // return <div className="Info">
@@ -30,4 +30,4 @@ class Card extends Component {
   )}
 }
 
-export default Card;
+export default Cards;

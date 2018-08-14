@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactModal from 'react-modal';
 
-import { Card, Button, Icon, Loader } from 'semantic-ui-react'
+import { Card, Button, Icon, Loader, Header } from 'semantic-ui-react'
 import './css/Fight.css'
 
 function getRandomInt(max) {
@@ -117,28 +117,26 @@ class Fight extends Component {
 
 
   loadFight() {
-      const token = localStorage.getItem('token');
-      fetch('http://localhost:1337/loadGame', {
-        method: 'POST',
-        headers: {
-          'Authentication' : 'bearer ' + token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({savingSpots: this.state.savingSpots})
-      })
-      .then((res) => res.json())
-      .then((resp) => {
-        if (resp.info) {
-          // console.log('kjalksdkfldsa', resp.info);
-          this.setState(Object.assign({}, this.state, resp.info))
-          // this.goGame()
-          this.setState({showLoad: false});
-        }
-      })
-      .catch((err) => {
-        // network error
-        console.log('error', err)
-      })
+    const token = localStorage.getItem('token');
+    fetch('http://localhost:1337/loadGame', {
+      method: 'POST',
+      headers: {
+        'Authentication' : 'bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({savingSpots: this.state.savingSpots})
+    })
+    .then((res) => res.json())
+    .then((resp) => {
+      if (resp.info) {
+        this.setState(Object.assign({}, this.state, resp.info))
+        this.setState({showLoad: false});
+      }
+    })
+    .catch((err) => {
+      // network error
+      console.log('error', err)
+    })
   }
 
 
@@ -416,8 +414,6 @@ class Fight extends Component {
       );
     });
 
-
-
     return (<div>
       <div className="start-and-end">
         <Button className="btn-top" animated='vertical' onClick={() => this.showLoad()}>
@@ -450,124 +446,179 @@ class Fight extends Component {
             <Icon name='power' />
           </Button.Content>
         </Button>
+        <Button className="btn-top" animated='vertical' onClick={() => this.props.goHome()}>
+          <Button.Content hidden>Home</Button.Content>
+          <Button.Content visible>
+            <Icon name='home' />
+          </Button.Content>
+        </Button>
       </div>
 
       <div className='fight'>
         <div style={{color: 'red'}}><strong>Enemy Information</strong></div>
-        <div className="health"><img alt="" width="30px" height="30px" src="https://www.redcross.org.hk/rcmovement/images/cross.jpg"/> {currentHealth}/{maxHealth}</div>
+        <div className="health">
+          <Header as='h2'>
+            <Icon.Group size='big'>
+              <Icon name='plus square' />
+            </Icon.Group>
+            {currentHealth}/{maxHealth}
+          </Header>
+        </div>
         <div className="imageThree">
-          <img alt="" className="images" width="30px" height="30px" src="https://t4.ftcdn.net/jpg/01/28/24/55/240_F_128245586_YohqYp6BYmV3oZIOXIu9FrC0zNr2i0K6.jpg"/>
-          {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.phy}
+          <Header className="images" as='h2'>
+            <Icon.Group size='big'>
+              <Icon name='quidditch' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.phy}
+          </Header>
           {enemyAttr === "fire" ?
-          <div>
-            <img alt="" className="images" width="30px" height="30px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxCAPN7-m6xSUgTlH2cyPPNGDdYZaQNgRMQHVwnFhi1e8rkJed"/>
+          <Header className="images" as='h2'>
+            <Icon.Group size='big'>
+              <Icon name='gripfire' />
+            </Icon.Group>
             {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
-          </div>
+          </Header>
           : enemyAttr === "water" ?
-          <div>
-            <img alt="" className="images" width="30px" height="30px" src="http://ohidul.me/wp-content/uploads/10-tips-for-saving-water-in-the-garden-logo-google-and-logos-brilliant-save.jpg"/>
+          <Header className="images" as='h2'>
+            <Icon.Group size='big'>
+              <Icon name='theme' />
+            </Icon.Group>
             {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
-          </div>
+          </Header>
           : enemyAttr === "grass" ?
-          <div>
-            <img alt="" className="images" width="30px" height="30px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyZ0kK72Gz9etb2aYc5qgUPwwopF51f7zrcRbC1pcD6wxy_YEw"/>
+          <Header className="images" as='h2'>
+            <Icon.Group size='big'>
+              <Icon name='tree' />
+            </Icon.Group>
             {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
-          </div>
+          </Header>
           : <img alt="" src="#"/>}
-          <img alt="" className="images" width="30px" height="30px" src="http://www.clker.com/cliparts/p/n/W/Y/F/V/base-of-shield-logo-hi.png"/>
-          {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.defence}
+          <Header className="images" as='h2'>
+            <Icon.Group size='big'>
+              <Icon name='shield' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.defence}
+          </Header>
         </div>
         <br/>
         <div><strong>My information</strong></div>
-        <div className="health"><img alt="" width="30px" height="30px" src="https://www.redcross.org.hk/rcmovement/images/cross.jpg"/> {myCurrentHealth}/{myMaxHealth}</div>
-        <div className="imageThree"><img alt="" className="images" width="30px" height="30px" src="https://t4.ftcdn.net/jpg/01/28/24/55/240_F_128245586_YohqYp6BYmV3oZIOXIu9FrC0zNr2i0K6.jpg"/>
-        {this.state.pokemon.attack.phy}
-        {myAttr === "fire" ?
-        <div>
-          <img alt="" className="images" width="30px" height="30px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxCAPN7-m6xSUgTlH2cyPPNGDdYZaQNgRMQHVwnFhi1e8rkJed"/>
-          {this.state.pokemon.attack.mag}
+        <div className="health">
+          <Header as='h2'>
+            <Icon.Group size='big'>
+              <Icon name='plus square' />
+            </Icon.Group>
+            {myCurrentHealth}/{myMaxHealth}
+          </Header>
         </div>
-        : myAttr === "water" ?
-        <div>
-          <img alt="" className="images" width="30px" height="30px" src="http://ohidul.me/wp-content/uploads/10-tips-for-saving-water-in-the-garden-logo-google-and-logos-brilliant-save.jpg"/>
-          {this.state.pokemon.attack.mag}
+        <div className="imageThree">
+          <Header className="images" as='h2'>
+            <Icon.Group size='big'>
+              <Icon name='quidditch' />
+            </Icon.Group>
+            {this.state.pokemon.attack.phy}
+          </Header>
+          {myAttr === "fire" ?
+          <Header className="images" as='h2'>
+            <Icon.Group size='big'>
+              <Icon name='gripfire' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "water" ?
+          <Header className="images" as='h2'>
+            <Icon.Group size='big'>
+              <Icon name='theme' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "grass" ?
+          <Header className="images" as='h2'>
+            <Icon.Group size='big'>
+              <Icon name='tree' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : <img alt="" src="#"/>}
+          <Header className="images" as='h2'>
+            <Icon.Group size='big'>
+              <Icon name='shield' />
+            </Icon.Group>
+            {this.state.pokemon.defence}
+          </Header>
         </div>
-        : myAttr === "grass" ?
-        <div>
-          <img alt="" className="images" width="30px" height="30px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyZ0kK72Gz9etb2aYc5qgUPwwopF51f7zrcRbC1pcD6wxy_YEw"/>
-          {this.state.pokemon.attack.mag}
+        <div className="health">
+          <Header as='h2'>
+            <Icon.Group size='big'>
+              <Icon name='bolt' />
+            </Icon.Group>
+            {this.state.costHave}/{this.state.costMax}
+          </Header>
         </div>
-        : <img alt="" src="#"/>}
-        <img alt="" className="images" width="30px" height="30px" src="http://www.clker.com/cliparts/p/n/W/Y/F/V/base-of-shield-logo-hi.png"/>
-        {this.state.pokemon.defence}
+        <br/>
+        <div style={{color: 'blue'}}><strong>Cards in hand: </strong></div>
+        <div className="cards-in-hand">
+          {
+            this.state.cardsInHand.map((card, i) => {
+              return <div className="Info" draggable="true" onDrag={() => this.drag(card)} onDragEnd={() => this.drop()}><div>{card.name}: {card.description}</div><div>Cost: {card.cost}</div></div>
+            })
+          }
+        </div>
+        <br/><button style={{marginBottom: 10}} onClick={() => this.nextRound()}>Next Round</button>
       </div>
-      <div className="costs"><img alt="" width="30px" height="30px" src="http://origin-images.ttnet.net/pi/cto/40/10/99/03/40109903-logo.jpg"/>
-      {this.state.costHave}/{this.state.costMax}</div>
-      <br/>
-      <div style={{color: 'blue'}}><strong>Cards in hand: </strong></div>
-      <div className="cards-in-hand">
-        {
-          this.state.cardsInHand.map((card, i) => {
-            return <div className="Info" draggable="true" onDrag={() => this.drag(card)} onDragEnd={() => this.drop()}><div>{card.name}: {card.description}</div><div>Cost: {card.cost}</div></div>
-          })
-        }
-      </div>
-      <br/><button style={{marginBottom: 10}} onClick={() => this.nextRound()}>Next Round</button>
-    </div>
-    <ReactModal
-      className=''
-      isOpen={this.state.showSave}
-      contentLabel="Saving">
-      <div className='text'>
-        <h3>Saving...</h3>
-        <span>Save your game status in one of the spots below</span>
-        <Button inverted color='red' onClick={() => this.setState({savingSpots: 1})}>
-          Red
-        </Button>
-        <Button inverted color='orange' onClick={() => this.setState({savingSpots: 2})}>
-          Orange
-        </Button>
-        <Button inverted color='yellow' onClick={() => this.setState({savingSpots: 3})}>
-          Yellow
-        </Button>
-        <Button inverted color='olive' onClick={() => this.setState({savingSpots: 4})}>
-          Olive
-        </Button>
-        <Button inverted color='green' onClick={() => this.setState({savingSpots: 5})}>
-          Green
-        </Button>
-      </div>
-      <button className="choiceA" onClick={() => this.saveFightStatus()}>Save</button>
-      <button className="choiceA" onClick={() => this.setState({showSave: false})}>Back</button>
-    </ReactModal>
-    <ReactModal
-      className=''
-      isOpen={this.state.showLoad}
-      contentLabel="Loading">
-      <div className='text'>
-        <h3>Loading</h3>
-        <span>Choose the game you want to load</span>
-        <Card.Group>{pokemonLoads}</Card.Group>
-      </div>
-      <button className="choiceA" onClick={() => this.loadFight()}>Load</button>
-      <button className="choiceA" onClick={() => this.setState({showLoad: false})}>Back</button>
-    </ReactModal>
+      <ReactModal
+        className=''
+        isOpen={this.state.showSave}
+        contentLabel="Saving">
+        <div className='text'>
+          <h3>Saving...</h3>
+          <span>Save your game status in one of the spots below</span>
+          <Button inverted color='red' onClick={() => this.setState({savingSpots: 1})}>
+            Red
+          </Button>
+          <Button inverted color='orange' onClick={() => this.setState({savingSpots: 2})}>
+            Orange
+          </Button>
+          <Button inverted color='yellow' onClick={() => this.setState({savingSpots: 3})}>
+            Yellow
+          </Button>
+          <Button inverted color='olive' onClick={() => this.setState({savingSpots: 4})}>
+            Olive
+          </Button>
+          <Button inverted color='green' onClick={() => this.setState({savingSpots: 5})}>
+            Green
+          </Button>
+        </div>
+        <button className="choiceA" onClick={() => this.saveFightStatus()}>Save</button>
+        <button className="choiceA" onClick={() => this.setState({showSave: false})}>Back</button>
+      </ReactModal>
+      <ReactModal
+        className=''
+        isOpen={this.state.showLoad}
+        contentLabel="Loading">
+        <div className='text'>
+          <h3>Loading</h3>
+          <span>Choose the game you want to load</span>
+          <Card.Group>{pokemonLoads}</Card.Group>
+        </div>
+        <button className="choiceA" onClick={() => this.loadFight()}>Load</button>
+        <button className="choiceA" onClick={() => this.setState({showLoad: false})}>Back</button>
+      </ReactModal>
 
-    <ReactModal
-      className=''
-      isOpen={this.state.showLoad}
-      contentLabel="Loading">
-      <div className='text'>
-        <h3>Loading</h3>
-        <span>Choose the game you want to load</span>
-        <Card.Group>{pokemonLoads}</Card.Group>
-      </div>
-      <button className="choiceA" onClick={() => this.loadFight()}>Load</button>
-      <button className="choiceA" onClick={() => this.setState({showLoad: false})}>Back</button>
-    </ReactModal>
-  </div>
+      <ReactModal
+        className=''
+        isOpen={this.state.showLoad}
+        contentLabel="Loading">
+        <div className='text'>
+          <h3>Loading</h3>
+          <span>Choose the game you want to load</span>
+          <Card.Group>{pokemonLoads}</Card.Group>
+        </div>
+        <button className="choiceA" onClick={() => this.loadFight()}>Load</button>
+        <button className="choiceA" onClick={() => this.setState({showLoad: false})}>Back</button>
+      </ReactModal>
+    </div>
   )
-  }
+}
 }
 
 export default Fight;

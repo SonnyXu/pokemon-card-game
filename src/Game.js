@@ -712,8 +712,23 @@ class Game extends Component {
       })
   }
 
+  goHome() {
+    let result = window.confirm("Are you sure to go back to home page? You will lose all the data unsaved.");
+    console.log(startStatus);
+    if (result) {
+      this.setState(Object.assign({}, startStatus, {
+        position: [],
+        cards:[],
+        cardsAfterWin: [],
+        allPokemon: [],
+        color: ['blue'],
+        loads: []
+      }));
+    }
+  }
+
   render() {
-    console.log(this.state);
+    console.log(startStatus);
     if (this.state.currentPage === "settings") {
       return (<div>
         <h1>This is the settings</h1>
@@ -791,6 +806,9 @@ class Game extends Component {
           <div>
             <Button style={{width: '150px'}} content='About' secondary onClick={() => this.setState({currentPage: "about"})}/>
           </div>
+          <div>
+            <Button style={{width: '150px'}} content='Logout' secondary onClick={() => this.props.logout()}/>
+          </div>
         </Container>
 
         <ReactModal
@@ -847,6 +865,12 @@ class Game extends Component {
                 <Icon name='close' />
               </Button.Content>
             </Button>
+            <Button className="btn-top" animated='vertical' onClick={() => this.goHome()}>
+              <Button.Content hidden>Home</Button.Content>
+              <Button.Content visible>
+                <Icon name='home' />
+              </Button.Content>
+            </Button>
           </div>
           : <div></div>}
           <div className="info">
@@ -900,6 +924,7 @@ class Game extends Component {
               fightInfo={this.state.fightInfo}
               status={this.state.status}
               loadGame={() => this.loadGame()}
+              goHome={() => this.goHome()}
             />
           }
           {
