@@ -30,14 +30,14 @@
 }
 .Area-Btn-Undiscovered {
   background-color: black;
-  height:50px;
+  height: 50px;
   width:50px;
   cursor:pointer;
 }
 .Area-Btn-Merchant {
   background-color: skyblue;
-  height:50px;
-  width:50px;
+  height: 50px;
+  width: 50px;
   cursor:pointer;
 }
 .Area-Btn-Random {

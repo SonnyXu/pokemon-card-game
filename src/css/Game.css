@@ -1,6 +1,24 @@
+div.text {
+  margin: 3px;
+}
+
+.ui.dropdown .menu>.item {
+    padding: 3px !important;
+}
+
+.ui.progress:last-child {
+    margin-top: 1px;
+    margin-bottom: 2px;
+}
+
+div.progress {
+  margin: 0px
+}
+
 h2 {
   text-align: center;
 }
+
 .Before-Start {
   text-align: center;
   padding-top: 100px;
@@ -25,7 +43,7 @@ h2 {
 }
 
 .start-and-end {
-  margin-right: 20px;
+  margin: 5px 5px;
   float: right;
 }
 
@@ -36,6 +54,19 @@ h2 {
   padding: 5px 8px;
   background-color:  green;
   color: white
+}
+
+.btn-top {
+  height: 40px;
+  width: 60px;
+}
+
+.btn-left {
+  height: 40px;
+  padding: 30px;
+  width: 60px;
+  font-size: 6px;
+  text-align: center;
 }
 
 .Sale-Items {
@@ -49,13 +80,13 @@ h2 {
 }
 
 .info {
-  border: 2px black solid;
-  margin-left: 20px;
+  margin: 5px 5px;
   float: left;
-  margin-top: 10px;
-  margin-right: -100px;
-  padding: 8px
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 
 .merchant{
   position: absolute;

@@ -11,6 +11,10 @@
   flex-direction: row;
 }
 
+.start-and-end {
+  float: right;
+}
+
 .Info {
   width: 80px;
   height: 120px;

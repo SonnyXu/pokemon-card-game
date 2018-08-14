@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import Game from './Game.js';
 import hash from 'object-hash';
 
+import {Button, Container, Input} from 'semantic-ui-react';
+import './css/App.css'
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -69,6 +72,14 @@ class App extends Component {
     });
   }
 
+  goMenu() {
+    this.setState({
+      username: "",
+      password: "",
+      currentPage: "menu"
+    })
+  }
+
   register() {
     const username = hash(this.state.username);
     const password = hash(this.state.password);
@@ -85,7 +96,6 @@ class App extends Component {
       })
       .then(res => res.json())
       .then((resp) => {
-        console.log(resp);
         if (resp.username) {
           this.goLogin()
         } else if (resp.err === "repetitve username") {
@@ -116,20 +126,9 @@ class App extends Component {
       })
       .then((res) => res.json())
       .then((resp) => {
-        if (resp.token) {
+        if (resp.status) {
           localStorage.setItem('token', resp.token);
-          this.setState({
-            info: resp.info,
-            fightInfo: {
-              cardsLeft: resp.info.cardsLeft,
-              cardsInHand: resp.info.cardsInHand,
-              cardsUsed: resp.info.cardsUsed,
-              costHave: resp.info.costHave,
-              costMax: resp.info.costMax,
-              status: resp.info.status
-            }
-          });
-          this.goGame()
+          this.goMenu()
         } else {
           window.alert("Incorrect username or password");
           this.goLogin();
@@ -152,41 +151,53 @@ class App extends Component {
     })
   }
 
+
+
   render() {
     if (this.state.currentPage === "register") {
-      return <div>
-        <h1>Register</h1>
-        <div class="username">
-          <label for="username">Username: </label>
-          <input type="text" id="username" name="username" value={this.state.username} onChange={(e) => this.usernameChange(e)}/>
+      return (
+       <Container style={{ margin: '100px'}}>
+        <h1 className="head">Register</h1>
+        <div className="app">
+          <label for="username" style={{marginRight: '20px'}}>Username </label>
+          <Input type="text" id="username" name="username" value={this.state.username} onChange={(e) => this.usernameChange(e)}/>
         </div>
-        <div class="password" style={{marginTop: '15px'}}>
-          <label for="password">Password: </label>
-          <input type="password" id="password" name="password" value={this.state.password} onChange={(e) => this.passwordChange(e)}/>
+        <div className="app">
+          <label for="password" style={{marginRight: '20px'}}>Password </label>
+          <Input type="password" id="password" name="password" value={this.state.password} onChange={(e) => this.passwordChange(e)}/>
         </div>
-        <div style={{marginTop: '15px'}}>
-          <button style={{ marginRight: '10px'}} onClick={() => this.register()}>Register</button>
-          <button onClick={() => this.goLogin()}>Go to Login</button>
+        <div className="app-btn">
+          <div className="app">
+            <Button style={{width: '150px'}} content='Register' primary onClick={() => this.register()} />
+          </div>
+          <div className="app">
+            <Button style={{width: '150px'}} content='Go to Login' secondary onClick={() => this.goLogin()} />
+          </div>
         </div>
-      </div>
+      </Container>)
     } else if (this.state.currentPage === "login") {
-      return <div>
-        <h1>Login</h1>
-        <div>
-          <label htmlFor="username">Username: </label>
-          <input type="text" id="username" name="username" value={this.state.username} onChange={(e) => this.usernameChange(e)}/>
+      return (
+        <Container style={{ margin: '100px'}}>
+        <h1 className="head">Login</h1>
+        <div className="app">
+          <label htmlFor="username" style={{marginRight: '20px'}}>Username </label>
+          <Input type="text" id="username" name="username" value={this.state.username} onChange={(e) => this.usernameChange(e)}/>
         </div>
-        <div style={{marginTop: '15px'}}>
-          <label htmlFor="password">Password: </label>
-          <input type="password" id="password" name="password" value={this.state.password} onChange={(e) => this.passwordChange(e)}/>
+        <div className="app">
+          <label htmlFor="password" style={{marginRight: '20px'}}>Password </label>
+          <Input type="password" id="password" name="password" value={this.state.password} onChange={(e) => this.passwordChange(e)}/>
         </div>
-        <div style={{marginTop: '15px'}}>
-          <button style={{ marginRight: '10px'}} onClick={() => this.login(hash(this.state.username), hash(this.state.password))}>Login</button>
-          <button onClick={() => this.goRegister()}>Go to Register</button>
+        <div className="app-btn">
+          <div className="app">
+            <Button style={{width: '150px'}} content='Login' primary onClick={() => this.login(hash(this.state.username), hash(this.state.password))} />
+          </div>
+          <div className="app">
+            <Button style={{width: '150px'}} content='Go to Register' secondary onClick={() => this.goRegister()} />
+          </div>
         </div>
-      </div>
+      </Container>)
     } else {
-      return <Game logout={() => this.logout()} info={this.state.info} fightInfo={this.state.fightInfo}/>
+      return <Game logout={() => this.logout()}/>
     }
   }
 }

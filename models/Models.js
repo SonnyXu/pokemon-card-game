@@ -27,6 +27,19 @@ var userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  saves: {
+    type: Object,
+    default: {1: "", 2: "", 3: "", 4: "", 5:""}
+  }
+});
+
+var saveInfoSchema = new mongoose.Schema({
+  username: {
+    type: String
+  },
+  savingSpots: {
+    type: Number
+  },
   worldMap: {
     type: Array,
   },
@@ -104,12 +117,18 @@ var userSchema = new mongoose.Schema({
   },
   cardsInHand: {
     type: Array
+  },
+  saveTime: {
+    type: Date
   }
 });
 
 
 var User = mongoose.model('User', userSchema);
+var Info = mongoose.model('Info', saveInfoSchema);
+
 
 module.exports = {
-  User: User
+  User: User,
+  Info: Info
 }

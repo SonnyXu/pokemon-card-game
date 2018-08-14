@@ -1,11 +1,24 @@
 # Pokémon Card Game
-### Updates and version info ### 
+### Updates and version info ###
+
+
+- **Update to Version 1.3.0**
+
+  Players now have five spots to save their games.
+
+  Fixed the bugs when saving game during the fight.
+
+  Players now can load the game from saving spots at anytime.
+
+  Add a Home page where player can choose to start a new game, continue or load game.
+
+  Improve the overall UI including changing info box to buttons above the map
 
 - **Update to Version 1.2.0**
 
   Players now can save their games.
 
-  We switched to using jsonwebtoken insteand of passport.
+  We switched to using jsonwebtoken instead of passport.
 
 - **Update to Version 1.1.0**
 

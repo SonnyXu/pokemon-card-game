@@ -1,8 +1,19 @@
 import React, { Component } from 'react';
+import ReactModal from 'react-modal';
+
+import { Card, Button, Icon, Loader } from 'semantic-ui-react'
 import './css/Fight.css'
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
+}
+
+function emptyArray(oldArr) {
+  let arr = oldArr;
+  while (arr.length !== 0) {
+    arr.pop();
+  }
+  return arr;
 }
 
 class Fight extends Component {
@@ -18,56 +29,58 @@ class Fight extends Component {
       let j = cardsLeft.splice(getRandomInt(cardsLeft.length), 1)
       cardsInHand.push(j[0])
     }
-
-    if (this.props.fightInfo && this.props.fightInfo.status === 'fight') {
-      let obj1 = {
-        worldMap: this.props.worldMap,
-        position: this.props.position,
-        pokemon: this.props.pokemon,
-        allPokemon: this.props.allPokemon,
-        cards: cards,
-        cardsHold: {},
-        color: this.props.color
-      }
-      let obj2 = this.props.fightInfo;
-      this.state = Object.assign({}, obj1, obj2);
-      this.props.fightInfo.status = null;
-    } else {
-      this.state = {
-        worldMap: this.props.worldMap,
-        position: this.props.position,
-        pokemon: this.props.pokemon,
-        allPokemon: this.props.allPokemon,
-        cards: cards,
-        cardsHold: {},
-
-        //need saving
-        cardsLeft: cardsLeft,
-        cardsInHand: cardsInHand,
-        cardsUsed: [],
-        costHave: 3,
-        costMax: 3,
-
-        color: this.props.color
+    let state = this.props.this
+    let startStatus = {
+      worldMap: this.props.worldMap,
+      position: this.props.position,
+      pokemon: this.props.pokemon,
+      allPokemon: this.props.allPokemon,
+      cards: cards,
+      cardsHold: {},
+      cardsLeft: cardsLeft,
+      cardsInHand: cardsInHand,
+      cardsUsed: [],
+      costHave: 3,
+      costMax: 3,
+      color: this.props.color,
+      savingStatus: false,
+      showSave: false,
+      showLoad: false,
+      savingSpots: this.props.savingSpots,
+      loads: []
+    }
+    let data = {};
+    for (let key in this.props.fightInfo) {
+      if (this.props.fightInfo[key] !== undefined && this.props.fightInfo[key].length !== 0) {
+        data[key] = this.props.fightInfo[key];
       }
     }
+    this.state = Object.assign({}, state, startStatus, data, {status: "fight"});
   }
 
-  saveFightStatus() {
+  // componentDidMount() {
+  //   this.setState({savingStatus: false});
+  // }
+
+  async saveFightStatus() {
+    console.log(this.state);
+    if (this.state.showSave) {
+      this.setState({savingStatus: true})
+    } else {
+      await this.setState({savingSpots: 1, savingStatus: true});
+    }
     fetch('http://localhost:1337/save', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authentication': 'bearer ' + localStorage.getItem('token')
       },
-      body: JSON.stringify(this.state)
+      body: JSON.stringify(Object.assign({}, this.state, {saveTime: new Date()}))
     })
     .then((res) => res.json())
     .then(resp => {
       if (resp.status === "success") {
-        window.alert("fight status saved!")
-        console.log('saved status', resp.result)
-        this.props.save()
+        this.setState({savingStatus: false});
       } else {
         window.alert("Error!");
       }
@@ -76,8 +89,59 @@ class Fight extends Component {
       // network error
       console.log('error', err)
     })
-    console.log('Done saving before return')
   }
+
+  showLoad() {
+    const token = localStorage.getItem('token');
+    fetch('http://localhost:1337/showLoad', {
+      method: 'GET',
+      headers: {
+        'Authentication' : 'bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .then(resp => {
+      if (resp.info) {
+        this.setState({loads: emptyArray(this.state.loads)});
+        let newArr = this.state.loads.concat(resp.info)
+        this.setState({loads: newArr, showLoad: true});
+      } else if (resp.empty) {
+        this.setState({load: [], showLoad: true})
+      } else {
+        window.alert(resp.error)
+      }
+    })
+    .catch(err => console.log(err));
+  }
+
+
+  loadFight() {
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:1337/loadGame', {
+        method: 'POST',
+        headers: {
+          'Authentication' : 'bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({savingSpots: this.state.savingSpots})
+      })
+      .then((res) => res.json())
+      .then((resp) => {
+        if (resp.info) {
+          // console.log('kjalksdkfldsa', resp.info);
+          this.setState(Object.assign({}, this.state, resp.info))
+          // this.goGame()
+          this.setState({showLoad: false});
+        }
+      })
+      .catch((err) => {
+        // network error
+        console.log('error', err)
+      })
+  }
+
+
 
   compareMag(enemyAttr, myAttr) {
     if (enemyAttr === myAttr) return 0;
@@ -268,7 +332,9 @@ class Fight extends Component {
       let possibility = Math.pow(currentHealth/maxHealth, 1/3);
       if (Math.random() > possibility) {
         let arr = this.state.allPokemon;
+        let name = window.prompt("name?");
         arr.push({
+          name: name,
           level: {
             num: 1,
             maxExp: 100,
@@ -333,73 +399,175 @@ class Fight extends Component {
     let maxHealth = this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.health.maxHealth;
     let myCurrentHealth = this.state.pokemon.health.currentHealth;
     let myMaxHealth = this.state.pokemon.health.maxHealth
-    return <div className='fight'>
-      <div>
-        <button className="start-game" onClick={() => this.saveFightStatus()}>Save</button>
-        <button className="end-game" onClick={() => this.endGame()}>End</button>
+    let colors = ['red', 'orange', 'yellow', 'olive', 'green'];
+
+    const pokemonLoads = this.state.loads.map(obj => {
+      const p = obj.pokemon;
+      const t = new Date(obj.saveTime);
+      const spot = obj.savingSpots
+      return (
+        <Card onClick={() => this.setState({savingSpots: spot})}>
+          <Card.Content>
+            <Card.Header><Icon name="circle" color={colors[obj.savingSpots - 1]}/> {p.name}</Card.Header>
+            <Card.Meta>{`${t.getFullYear()}-${t.getMonth()}-${t.getDate()} ${t.getHours()}: ${(t.getMinutes() + 100).toString().substring(1)}`}</Card.Meta>
+            <Card.Description>{"Level #" + p.level.num}</Card.Description>
+          </Card.Content>
+        </Card>
+      );
+    });
+
+
+
+    return (<div>
+      <div className="start-and-end">
+        <Button className="btn-top" animated='vertical' onClick={() => this.showLoad()}>
+          <Button.Content hidden>Load</Button.Content>
+          <Button.Content visible>
+            <Icon name='download' />
+          </Button.Content>
+        </Button>
+        {this.state.savingStatus ?
+          <Button className="btn-top" loading>
+            Loading
+          </Button>
+          :
+          <Button className="btn-top" animated='vertical' onClick={() => this.saveFightStatus()}>
+            <Button.Content hidden>Quick Save</Button.Content>
+            <Button.Content visible>
+              <Icon name='save' />
+            </Button.Content>
+          </Button>
+        }
+        <Button className="btn-top" animated='vertical' onClick={() => this.setState({showSave: true})}>
+          <Button.Content hidden>Save</Button.Content>
+          <Button.Content visible>
+            <Icon name='save outline' />
+          </Button.Content>
+        </Button>
+        <Button className="btn-top" animated='vertical' onClick={() => this.props.endGame()}>
+          <Button.Content hidden>End</Button.Content>
+          <Button.Content visible>
+            <Icon name='power' />
+          </Button.Content>
+        </Button>
       </div>
-      <div style={{color: 'red'}}><strong>Enemy Information</strong></div>
-      <div className="health"><img alt="" width="30px" height="30px" src="https://www.redcross.org.hk/rcmovement/images/cross.jpg"/> {currentHealth}/{maxHealth}</div>
-      <div className="imageThree">
-        <img alt="" className="images" width="30px" height="30px" src="https://t4.ftcdn.net/jpg/01/28/24/55/240_F_128245586_YohqYp6BYmV3oZIOXIu9FrC0zNr2i0K6.jpg"/>
-        {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.phy}
-        {enemyAttr === "fire" ?
+
+      <div className='fight'>
+        <div style={{color: 'red'}}><strong>Enemy Information</strong></div>
+        <div className="health"><img alt="" width="30px" height="30px" src="https://www.redcross.org.hk/rcmovement/images/cross.jpg"/> {currentHealth}/{maxHealth}</div>
+        <div className="imageThree">
+          <img alt="" className="images" width="30px" height="30px" src="https://t4.ftcdn.net/jpg/01/28/24/55/240_F_128245586_YohqYp6BYmV3oZIOXIu9FrC0zNr2i0K6.jpg"/>
+          {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.phy}
+          {enemyAttr === "fire" ?
+          <div>
+            <img alt="" className="images" width="30px" height="30px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxCAPN7-m6xSUgTlH2cyPPNGDdYZaQNgRMQHVwnFhi1e8rkJed"/>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </div>
+          : enemyAttr === "water" ?
+          <div>
+            <img alt="" className="images" width="30px" height="30px" src="http://ohidul.me/wp-content/uploads/10-tips-for-saving-water-in-the-garden-logo-google-and-logos-brilliant-save.jpg"/>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </div>
+          : enemyAttr === "grass" ?
+          <div>
+            <img alt="" className="images" width="30px" height="30px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyZ0kK72Gz9etb2aYc5qgUPwwopF51f7zrcRbC1pcD6wxy_YEw"/>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </div>
+          : <img alt="" src="#"/>}
+          <img alt="" className="images" width="30px" height="30px" src="http://www.clker.com/cliparts/p/n/W/Y/F/V/base-of-shield-logo-hi.png"/>
+          {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.defence}
+        </div>
+        <br/>
+        <div><strong>My information</strong></div>
+        <div className="health"><img alt="" width="30px" height="30px" src="https://www.redcross.org.hk/rcmovement/images/cross.jpg"/> {myCurrentHealth}/{myMaxHealth}</div>
+        <div className="imageThree"><img alt="" className="images" width="30px" height="30px" src="https://t4.ftcdn.net/jpg/01/28/24/55/240_F_128245586_YohqYp6BYmV3oZIOXIu9FrC0zNr2i0K6.jpg"/>
+        {this.state.pokemon.attack.phy}
+        {myAttr === "fire" ?
         <div>
           <img alt="" className="images" width="30px" height="30px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxCAPN7-m6xSUgTlH2cyPPNGDdYZaQNgRMQHVwnFhi1e8rkJed"/>
-          {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          {this.state.pokemon.attack.mag}
         </div>
-        : enemyAttr === "water" ?
+        : myAttr === "water" ?
         <div>
           <img alt="" className="images" width="30px" height="30px" src="http://ohidul.me/wp-content/uploads/10-tips-for-saving-water-in-the-garden-logo-google-and-logos-brilliant-save.jpg"/>
-          {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          {this.state.pokemon.attack.mag}
         </div>
-        : enemyAttr === "grass" ?
+        : myAttr === "grass" ?
         <div>
           <img alt="" className="images" width="30px" height="30px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyZ0kK72Gz9etb2aYc5qgUPwwopF51f7zrcRbC1pcD6wxy_YEw"/>
-          {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          {this.state.pokemon.attack.mag}
         </div>
         : <img alt="" src="#"/>}
         <img alt="" className="images" width="30px" height="30px" src="http://www.clker.com/cliparts/p/n/W/Y/F/V/base-of-shield-logo-hi.png"/>
-        {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.defence}
+        {this.state.pokemon.defence}
       </div>
+      <div className="costs"><img alt="" width="30px" height="30px" src="http://origin-images.ttnet.net/pi/cto/40/10/99/03/40109903-logo.jpg"/>
+      {this.state.costHave}/{this.state.costMax}</div>
       <br/>
-      <div><strong>My information</strong></div>
-      <div className="health"><img alt="" width="30px" height="30px" src="https://www.redcross.org.hk/rcmovement/images/cross.jpg"/> {myCurrentHealth}/{myMaxHealth}</div>
-      <div className="imageThree"><img alt="" className="images" width="30px" height="30px" src="https://t4.ftcdn.net/jpg/01/28/24/55/240_F_128245586_YohqYp6BYmV3oZIOXIu9FrC0zNr2i0K6.jpg"/>
-      {this.state.pokemon.attack.phy}
-      {myAttr === "fire" ?
-      <div>
-        <img alt="" className="images" width="30px" height="30px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxCAPN7-m6xSUgTlH2cyPPNGDdYZaQNgRMQHVwnFhi1e8rkJed"/>
-        {this.state.pokemon.attack.mag}
+      <div style={{color: 'blue'}}><strong>Cards in hand: </strong></div>
+      <div className="cards-in-hand">
+        {
+          this.state.cardsInHand.map((card, i) => {
+            return <div className="Info" draggable="true" onDrag={() => this.drag(card)} onDragEnd={() => this.drop()}><div>{card.name}: {card.description}</div><div>Cost: {card.cost}</div></div>
+          })
+        }
       </div>
-      : myAttr === "water" ?
-      <div>
-        <img alt="" className="images" width="30px" height="30px" src="http://ohidul.me/wp-content/uploads/10-tips-for-saving-water-in-the-garden-logo-google-and-logos-brilliant-save.jpg"/>
-        {this.state.pokemon.attack.mag}
-      </div>
-      : myAttr === "grass" ?
-      <div>
-        <img alt="" className="images" width="30px" height="30px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyZ0kK72Gz9etb2aYc5qgUPwwopF51f7zrcRbC1pcD6wxy_YEw"/>
-        {this.state.pokemon.attack.mag}
-      </div>
-      : <img alt="" src="#"/>}
-      <img alt="" className="images" width="30px" height="30px" src="http://www.clker.com/cliparts/p/n/W/Y/F/V/base-of-shield-logo-hi.png"/>
-      {this.state.pokemon.defence}
+      <br/><button style={{marginBottom: 10}} onClick={() => this.nextRound()}>Next Round</button>
     </div>
-    <div className="costs"><img alt="" width="30px" height="30px" src="http://origin-images.ttnet.net/pi/cto/40/10/99/03/40109903-logo.jpg"/>
-    {this.state.costHave}/{this.state.costMax}</div>
-    <br/>
-    <div style={{color: 'blue'}}><strong>Cards in hand: </strong></div>
-    <div className="cards-in-hand">
-      {
-        this.state.cardsInHand.map((card, i) => {
-          return <div className="Info" draggable="true" onDrag={() => this.drag(card)} onDragEnd={() => this.drop()}><div>{card.name}: {card.description}</div><div>Cost: {card.cost}</div></div>
-        })
-      }
-    </div>
-    <br/><button style={{marginBottom: 10}} onClick={() => this.nextRound()}>Next Round</button>
+    <ReactModal
+      className=''
+      isOpen={this.state.showSave}
+      contentLabel="Saving">
+      <div className='text'>
+        <h3>Saving...</h3>
+        <span>Save your game status in one of the spots below</span>
+        <Button inverted color='red' onClick={() => this.setState({savingSpots: 1})}>
+          Red
+        </Button>
+        <Button inverted color='orange' onClick={() => this.setState({savingSpots: 2})}>
+          Orange
+        </Button>
+        <Button inverted color='yellow' onClick={() => this.setState({savingSpots: 3})}>
+          Yellow
+        </Button>
+        <Button inverted color='olive' onClick={() => this.setState({savingSpots: 4})}>
+          Olive
+        </Button>
+        <Button inverted color='green' onClick={() => this.setState({savingSpots: 5})}>
+          Green
+        </Button>
+      </div>
+      <button className="choiceA" onClick={() => this.saveFightStatus()}>Save</button>
+      <button className="choiceA" onClick={() => this.setState({showSave: false})}>Back</button>
+    </ReactModal>
+    <ReactModal
+      className=''
+      isOpen={this.state.showLoad}
+      contentLabel="Loading">
+      <div className='text'>
+        <h3>Loading</h3>
+        <span>Choose the game you want to load</span>
+        <Card.Group>{pokemonLoads}</Card.Group>
+      </div>
+      <button className="choiceA" onClick={() => this.loadFight()}>Load</button>
+      <button className="choiceA" onClick={() => this.setState({showLoad: false})}>Back</button>
+    </ReactModal>
+
+    <ReactModal
+      className=''
+      isOpen={this.state.showLoad}
+      contentLabel="Loading">
+      <div className='text'>
+        <h3>Loading</h3>
+        <span>Choose the game you want to load</span>
+        <Card.Group>{pokemonLoads}</Card.Group>
+      </div>
+      <button className="choiceA" onClick={() => this.loadFight()}>Load</button>
+      <button className="choiceA" onClick={() => this.setState({showLoad: false})}>Back</button>
+    </ReactModal>
   </div>
-}
+  )
+  }
 }
 
 export default Fight;

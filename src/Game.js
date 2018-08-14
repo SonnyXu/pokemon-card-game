@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import ReactModal from 'react-modal';
+
 import WorldMap from './WorldMap.js';
 import Fight from './Fight.js'
-import Card from './Card.js';
+import Cards from './Card.js';
 import Sound from 'react-sound';
 import Merchant from './Merchant.js';
 import Event from './Event.js';
+
+import {Button, Icon, Loader, Container, Label, Dropdown, Progress, Segment, Card } from 'semantic-ui-react';
 import './css/Game.css';
 
 function generateEmptyMap(row, col) {
@@ -31,7 +34,7 @@ function emptyArray(oldArr) {
   return arr;
 }
 
-let startStatus = {
+const startStatus = {
   level: 0,
   start: false,
   row: 10,
@@ -44,6 +47,8 @@ let startStatus = {
   showModal3: true,
   showModal4: false,
   showModal5: true,
+  showSave: false,
+  showLoad: false,
   cards:[],
   cardsCanBeUsed: {
     phy: [
@@ -98,38 +103,43 @@ let startStatus = {
   allPokemon: [],
   money: 0,
   wakeup: false,
-  color: ['blue']
+  color: ['blue'],
+  savingStatus: false,
+  savingSpots: 1,
+  currentPage: "",
+  loads: []
 }
 
 
 class Game extends Component {
   constructor(props) {
     super(props);
-    console.log("Game starting", this.props.info);
-    if (this.props.info.start) {
-      this.state = this.props.info;
-    } else {
-      this.state = startStatus
-    }
+    this.state = Object.assign({}, {}, startStatus)
   }
 
-
-  save() {
+  async save() {
+    console.log(this.state);
+    if (this.state.showSave) {
+      this.setState({savingStatus: true})
+    } else {
+      await this.setState({savingSpots: 1, savingStatus: true});
+    }
     fetch('http://localhost:1337/save', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authentication': 'bearer ' + localStorage.getItem('token')
       },
-      body: JSON.stringify(this.state)
+      body: JSON.stringify(Object.assign({}, this.state, {saveTime: new Date()}))
     })
     .then((res) => res.json())
     .then(resp => {
 
       if (resp.status === "success") {
-        window.alert("game status saved!")
-        console.log('saved status', resp.result)
+        this.setState({savingStatus: false});
+        console.log(this.state);
       } else {
+        console.log(resp.error);
         window.alert("Error!");
       }
     })
@@ -137,7 +147,42 @@ class Game extends Component {
       // network error
       console.log('error', err)
     })
-    console.log('Done saving before return')
+  }
+
+  continue() {
+    const token = localStorage.getItem('token');
+    fetch('http://localhost:1337/continue', {
+      method: 'GET',
+      headers: {
+        'Authentication' : 'bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then((res) => res.json())
+    .then((resp) => {
+      if (resp.info) {
+        console.log(resp.info);
+        this.setState(Object.assign(this.state, resp.info, {
+          fightInfo: {
+            cardsLeft: resp.info.cardsLeft,
+            cardsInHand: resp.info.cardsInHand,
+            cardsUsed: resp.info.cardsUsed,
+            costHave: resp.info.costHave,
+            costMax: resp.info.costMax,
+            status: resp.info.status
+          }
+        }))
+        // this.goGame()
+      }
+    })
+    .catch((err) => {
+      // network error
+      console.log('error', err)
+    })
+  }
+
+  showSave() {
+    this.setState({showSave: true})
   }
 
   openModal() {
@@ -184,8 +229,16 @@ class Game extends Component {
     });
   }
 
+  closeSave() {
+    this.setState({
+      showSave: false
+    })
+  }
+
   getFirstPokemon(attribute) {
+    let name = window.prompt("name?");
     let obj = {
+      name: name,
       level: {
         num: 1,
         maxExp: 100,
@@ -482,7 +535,8 @@ class Game extends Component {
       status: "free",
       showModal4: true,
       money: money,
-      cardsAfterWin: arr
+      cardsAfterWin: arr,
+      fightInfo: {}
     });
   }
 
@@ -598,62 +652,255 @@ class Game extends Component {
     this.setState({money: 0});
   }
 
+  showLoad() {
+    const token = localStorage.getItem('token');
+    fetch('http://localhost:1337/showLoad', {
+      method: 'GET',
+      headers: {
+        'Authentication' : 'bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .then(resp => {
+      if (resp.info) {
+        this.setState({loads: emptyArray(this.state.loads)});
+        let newArr = this.state.loads.concat(resp.info)
+        this.setState({loads: newArr, showLoad: true});
+      } else if (resp.empty) {
+        this.setState({load: [], showLoad: true})
+      } else {
+        window.alert(resp.error)
+      }
+    })
+    .catch(err => console.log(err));
+  }
+
+  loadGame() {
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:1337/loadGame', {
+        method: 'POST',
+        headers: {
+          'Authentication' : 'bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({savingSpots: this.state.savingSpots})
+      })
+      .then((res) => res.json())
+      .then(async (resp) => {
+        if (resp.info) {
+          console.log('kjalksdkfldsa', resp.info);
+          await this.setState(Object.assign({}, {}, startStatus))
+          this.setState(Object.assign(this.state, resp.info, {
+            fightInfo: {
+              cardsLeft: resp.info.cardsLeft,
+              cardsInHand: resp.info.cardsInHand,
+              cardsUsed: resp.info.cardsUsed,
+              costHave: resp.info.costHave,
+              costMax: resp.info.costMax,
+              status: resp.info.status
+            }
+          }))
+          console.log(startStatus, this.state);
+          // this.goGame()
+          this.setState({showLoad: false});
+        }
+      })
+      .catch((err) => {
+        // network error
+        console.log('error', err)
+      })
+  }
+
   render() {
     console.log(this.state);
-    if (!this.state.start) {
-      return <div>
-        <div className="start-and-end">
-          <button className="start-game" onClick={() => this.startGame()}>Start</button>
-          <button className="end-game" onClick={() => this.props.logout()}>Logout</button>
-        </div>
-        <div className="Before-Start">Please start game.</div>
-      </div>
+    if (this.state.currentPage === "settings") {
+      return (<div>
+        <h1>This is the settings</h1>
+        <Button content='Back' onClick={() => this.setState({currentPage: ""})} />
+      </div>);
+    } else if (this.state.currentPage === "about") {
+      return (<div>
+        <h1>This is the about</h1>
+        <Button content='Back' onClick={() => this.setState({currentPage: ""})} />
+      </div>);
     } else {
-      return <div>
-        <Sound
-          url='http://www.170mv.com/kw/other.web.rc01.sycdn.kuwo.cn/resource/n1/15/99/1879608878.mp3'
-          playStatus={Sound.status.PLAYING}
-        />
-        {this.state.status !== 'fight' ? <div className="start-and-end">
-          <button className="start-game" onClick={() => this.save()}>Save</button>
-          <button className="end-game" onClick={() => this.endGame()}>End</button>
-        </div> : <div></div>}
-        <div className='info'>
-          <h2>Status</h2>
-          <div className="money"><img alt="" height="40px" width="40px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNFEfQpOgik7rqwk-vSAi_0JRuMCdkF6o4E8HXpAwa8iNEPQNfYQ"/> {this.state.money}</div>
-          <img alt="" onClick={() => this.openModal()} height="40px" width="40px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxiU3srf5eo0zh5MTzLpI9_j93foOwgaiufXVj70_6feNN_ckW6g" />
-          <h6>Click to Switch Pokemon</h6>
-          <h6>You can only swtich</h6>
-          <h6>when not in the battle</h6>
-          <div>{this.state.allPokemon.map((pokemon, i) => {
-            if (pokemon.attribute === "water") {
-              return <div style={{backgroundColor: this.state.color[i]}}><img alt="" onClick={() => this.changePokemon(i)} height="40px" width="40px" src="https://pic.chinaz.com/2016/0802/6360573314774644572287630.jpeg"/> HP: {pokemon.health.currentHealth}</div>
-            } else if (pokemon.attribute === "fire") {
-              return <div style={{backgroundColor: this.state.color[i]}}><img alt="" onClick={() => this.changePokemon(i)} height="40px" width="40px" src="https://upload-images.jianshu.io/upload_images/6153592-bb6710852912c64f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700"/> HP: {pokemon.health.currentHealth}</div>
-            } else if (pokemon.attribute === "grass") {
-              return <div style={{backgroundColor: this.state.color[i]}}><img alt="" onClick={() => this.changePokemon(i)} height="40px" width="40px" src="https://i.ytimg.com/vi/NN9LaU2NlLM/maxresdefault.jpg"/> HP: {pokemon.health.currentHealth}</div>
-            } else {
-              return;
-            }
-          })}</div>
+
+      let colors = ['red', 'orange', 'yellow', 'olive', 'green'];
+      let options = [];
+      this.state.allPokemon.map(pokemon => {
+        if (pokemon.attribute === "fire") {
+          options.push({
+            label: {
+              icon: "gripfire",
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "water") {
+          options.push({
+            label: {
+              icon: "theme",
+              content: ''
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else {
+          options.push({
+            label: {
+              icon: "tree",
+              content: ''
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        }
+      })
+      const pokemonLoads = this.state.loads.map(obj => {
+        const p = obj.pokemon;
+        const t = new Date(obj.saveTime);
+        const spot = obj.savingSpots
+        return (
+          <Card onClick={() => this.setState({savingSpots: spot})}>
+            <Card.Content>
+              <Card.Header><Icon name="circle" color={colors[obj.savingSpots - 1]}/> {p.name}</Card.Header>
+              <Card.Meta>{`${t.getFullYear()}-${t.getMonth()}-${t.getDate()} ${t.getHours()}: ${(t.getMinutes() + 100).toString().substring(1)}`}</Card.Meta>
+              <Card.Description>{"Level #" + p.level.num}</Card.Description>
+            </Card.Content>
+          </Card>
+        );
+      });
+      if (!this.state.start) {
+
+        return (<div>
+          <Container style={{ margin: '100px'}}>
+          <div>
+            <Button style={{width: '150px'}} content='New Game' primary onClick={() => this.startGame()}/>
+          </div>
+          <div>
+            <Button style={{width: '150px'}} content='Continue' secondary onClick={() => this.continue()}/>
+          </div>
+          <div>
+            <Button style={{width: '150px'}} content='Load Game' secondary onClick={() => this.showLoad()}/>
+          </div>
+          <div>
+            <Button style={{width: '150px'}} content='Settings' secondary onClick={() => this.setState({currentPage: "settings"})} />
+          </div>
+          <div>
+            <Button style={{width: '150px'}} content='About' secondary onClick={() => this.setState({currentPage: "about"})}/>
+          </div>
+        </Container>
+
+        <ReactModal
+          className=''
+          isOpen={this.state.showLoad}
+          contentLabel="Loading">
+          <div>
+          <div className='text'>
+            <h3>Loading...</h3>
+            <span>Choose the game you want to load</span>
+            <br/>
+            <Card.Group>{pokemonLoads}</Card.Group>
+          </div>
+          <button className="choiceA" onClick={() => this.loadGame()}>Load</button>
+          <button className="choiceA" onClick={() => this.setState({showLoad: false})}>Back</button>
         </div>
-        {this.state.status !== "fight" ?
-        <WorldMap worldMap={this.state.worldMap}
-          start={this.state.start}
-          position={this.state.position}
-          move={(i ,j) => this.move(i, j)}/>
-          :
-          <Fight worldMap={this.state.worldMap}
-            position={this.state.position}
-            win={() => this.win()}
-            lose={() => this.lose()}
-            pokemon={this.state.pokemon}
-            cards={this.state.cards}
-            allPokemon = {this.state.allPokemon}
-            color={this.state.color}
-            save={() => this.save()}
-            fightInfo={this.props.fightInfo}
+        </ReactModal>
+      </div>)
+      } else {
+        return <div>
+          <Sound
+            url='http://www.170mv.com/kw/other.web.rc01.sycdn.kuwo.cn/resource/n1/15/99/1879608878.mp3'
+            playStatus={Sound.status.PLAYING}
           />
+          {this.state.status !== 'fight' ?
+          <div className="start-and-end">
+            <Button className="btn-top" animated='vertical' onClick={() => this.showLoad()}>
+              <Button.Content hidden>Load</Button.Content>
+              <Button.Content visible>
+                <Icon name='download' />
+              </Button.Content>
+            </Button>
+            {this.state.savingStatus ?
+              <Button className="btn-top" loading>
+                Loading
+              </Button>
+              :
+              <Button className="btn-top" animated='vertical' onClick={() => this.save()}>
+                <Button.Content hidden>Quick Save</Button.Content>
+                <Button.Content visible>
+                  <Icon name='save' />
+                </Button.Content>
+              </Button>
+            }
+            <Button className="btn-top" animated='vertical' onClick={() => this.showSave()}>
+              <Button.Content hidden>Save</Button.Content>
+              <Button.Content visible>
+                <Icon name='save outline' />
+              </Button.Content>
+            </Button>
+            <Button className="btn-top" animated='vertical' onClick={() => this.endGame()}>
+              <Button.Content hidden>End</Button.Content>
+              <Button.Content visible>
+                <Icon name='close' />
+              </Button.Content>
+            </Button>
+          </div>
+          : <div></div>}
+          <div className="info">
+            <Label style={{height: "40px", width: "80px", display: "flex", alignItems: "center", justifyContent: 'center', fontSize: "18px"}} as='a' content={this.state.money} icon='dollar sign' />
+            <Button style={{height: "40px", width: "60px"}} animated='vertical' onClick={() => this.openModal()}>
+              <Button.Content hidden>Bag</Button.Content>
+              <Button.Content visible>
+                <Icon name='dolly' />
+              </Button.Content>
+            </Button>
+            <Dropdown style={{height: "40px", width: "180px"}} className="icon" text='Pokemons' icon='filter' floating item labeled button>
+              <Dropdown.Menu>
+                <Dropdown.Item style={{margin: 'auto'}}>
+                  {
+                    options.map((pokemon, i) =>
+                    <div onClick={() => this.changePokemon(i)}>
+                      <Dropdown.Item {...pokemon} />
+                      {
+                        pokemon.currentHealth/pokemon.maxHealth < 0.2 ?
+                        <Progress size="small" color='red' value={pokemon.currentHealth} total={pokemon.maxHealth} progress='ratio' /> :
+                        pokemon.currentHealth/pokemon.maxHealth < 0.4 ?
+                        <Progress size="small" color='orange' value={pokemon.currentHealth} total={pokemon.maxHealth} progress='ratio' /> :
+                        pokemon.currentHealth/pokemon.maxHealth < 0.6 ?
+                        <Progress size="small" color='yellow' value={pokemon.currentHealth} total={pokemon.maxHealth} progress='ratio' /> :
+                        pokemon.currentHealth/pokemon.maxHealth < 0.8 ?
+                        <Progress size="small" color='olive' value={pokemon.currentHealth} total={pokemon.maxHealth} progress='ratio' /> :
+                        <Progress size="small" color='green' value={pokemon.currentHealth} total={pokemon.maxHealth} progress='ratio' />
+                      }
+                    </div>)
+                  }
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+          {this.state.status !== "fight" ?
+          <WorldMap worldMap={this.state.worldMap}
+            start={this.state.start}
+            position={this.state.position}
+            move={(i ,j) => this.move(i, j)}/>
+            :
+            <Fight worldMap={this.state.worldMap}
+              position={this.state.position}
+              win={() => this.win()}
+              lose={() => this.lose()}
+              pokemon={this.state.pokemon}
+              cards={this.state.cards}
+              allPokemon = {this.state.allPokemon}
+              color={this.state.color}
+              save={() => this.save()}
+              endGame={() => this.endGame()}
+              fightInfo={this.state.fightInfo}
+              status={this.state.status}
+              loadGame={() => this.loadGame()}
+            />
           }
           {
             this.state.wakeup === false ?
@@ -679,23 +926,24 @@ class Game extends Component {
             <Merchant
               cards={this.state.cards}
               money={this.state.money}
-              addBall={this.addBall.bind(this)}
-              addPack={this.addPack.bind(this)}
-              closeModal={this.closeModal2.bind(this)}
+              addBall={() => this.addBall()}
+              addPack={() => this.addPack()}
+              closeModal={() => this.closeModal2()}
             />
             : ''
           }
           {
             this.state.status === 'event' ?
             <Event
+              this={this.state}
               allPokemon = {this.state.allPokemon}
               pokemon={this.state.pokemon}
               cards={this.state.cards}
               cardsCanBeUsed={this.state.cardsCanBeUsed}
               money={this.state.money}
-              addBall={this.addBall.bind(this)}
-              addPack={this.addPack.bind(this)}
-              closeModal={this.closeModal2.bind(this)}
+              addBall={() => this.addBall()}
+              addPack={() => this.addPack()}
+              closeModal={() => this.closeModal2()}
               endGame={() => this.endGameDirectly()}
               choice2A1={() => this.choice2A1()}
               choice3A1={() => this.choice3A1()}
@@ -705,6 +953,7 @@ class Game extends Component {
             />
             : ''
           }
+
           <ReactModal
             className='bag'
             isOpen={this.state.showModal}
@@ -733,9 +982,51 @@ class Game extends Component {
             </div>
             <button className="choiceA" onClick={() => this.closeModal4()}>Back</button>
           </ReactModal>
+          <ReactModal
+            className=''
+            isOpen={this.state.showSave}
+            contentLabel="Saving">
+            <div className='text'>
+              <h3>Saving...</h3>
+              <span>Save your game status in one of the spots below</span>
+              <div>
+              <Button inverted color='red' onClick={() => this.setState({savingSpots: 1})}>
+                1
+              </Button>
+              <Button inverted color='orange' onClick={() => this.setState({savingSpots: 2})}>
+                2
+              </Button>
+              <Button inverted color='yellow' onClick={() => this.setState({savingSpots: 3})}>
+                3
+              </Button>
+              <Button inverted color='olive' onClick={() => this.setState({savingSpots: 4})}>
+                4
+              </Button>
+              <Button inverted color='green' onClick={() => this.setState({savingSpots: 5})}>
+                5
+              </Button>
+              </div>
+            </div>
+            <button className="choiceA" onClick={() => this.save()}>Save</button>
+            <button className="choiceA" onClick={() => this.closeSave()}>Back</button>
+          </ReactModal>
+
+          <ReactModal
+            className=''
+            isOpen={this.state.showLoad}
+            contentLabel="Loading">
+            <div className='text'>
+              <h3>Loading</h3>
+              <span>Choose the game you want to load</span>
+              <Card.Group>{pokemonLoads}</Card.Group>
+            </div>
+            <button className="choiceA" onClick={() => this.loadGame()}>Load</button>
+            <button className="choiceA" onClick={() => this.setState({showLoad: false})}>Back</button>
+          </ReactModal>
         </div>
       }
     }
   }
+}
 
-  export default Game;
+export default Game;
