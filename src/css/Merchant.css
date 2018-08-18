@@ -1,62 +1,63 @@
 .merchant{
-    position: absolute;
-    top: 40px;
-    left: 40px;
-    right: 40px;
-    bottom: 40px;
-    border: 1px solid rgb(204, 204, 204);
-    background: skyblue;
-    overflow: auto;
-    border-radius: 4px;
-    outline: none;
-    padding: 20px;
-  }
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  right: 40px;
+  bottom: 40px;
+  border: 1px solid rgb(204, 204, 204);
+  background: skyblue;
+  overflow: auto;
+  border-radius: 4px;
+  outline: none;
+  padding: 20px;
+}
 
-  .Sale-Items {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    margin-bottom: 30px;
-    margin-left: 40px;
-  }
 
-  .cardsInShop {
-    display: flex;
-    flex-direction: row;
-  }
+.Sale-Items {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-bottom: 30px;
+  margin-left: 40px;
+}
 
-  .cardsTitle {
-    text-align: center;
-    padding-right: 30px;
-  }
+.cardsInShop {
+  display: flex;
+  flex-direction: row;
+}
 
-  .Shop {
-    display: flex;
-    flex-direction: column;
-  }
+.cardsTitle {
+  text-align: center;
+  padding-right: 30px;
+}
 
-  .My-Items {
-    float: left;
-    margin-right: -20px
-  }
+.Shop {
+  display: flex;
+  flex-direction: column;
+}
 
-  .btn {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 10px;
-    font-size: 16px;
-    border-radius: 8px;
-    padding: 5px 8px;
-    background-color: #4CAF50;
-    color: white
-  }
+.My-Items {
+  /* float: left; */
+  margin-right: -20px
+}
 
-  .btn2 {
-    font-size: 16px;
-    border-radius: 8px;
-    padding: 5px 8px;
-    background-color: coral;
-    color: white
-  }
+.btn {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  padding: 5px 8px;
+  background-color: #4CAF50;
+  color: white
+}
+
+.btn2 {
+  font-size: 16px;
+  border-radius: 8px;
+  padding: 5px 8px;
+  background-color: coral;
+  color: white
+}

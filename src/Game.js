@@ -8,7 +8,7 @@ import Sound from 'react-sound';
 import Merchant from './Merchant.js';
 import Event from './Event.js';
 
-import {Button, Icon, Loader, Container, Label, Dropdown, Progress, Segment, Card } from 'semantic-ui-react';
+import {Button, Icon, Container, Label, Dropdown, Progress, Card } from 'semantic-ui-react';
 import './css/Game.css';
 
 function generateEmptyMap(row, col) {
@@ -79,7 +79,83 @@ const startStatus = {
       {name: "water", water: 3, cost: 1, description: "3 water damages"},
       {name: "water", water: 3, cost: 1, description: "3 water damages"},
       {name: "water", water: 3, cost: 1, description: "3 water damages"}
-    ]
+    ],
+    electric: [
+      {name: "electric", electric: 3, cost: 1, description: "3 electric damages"},
+      {name: "electric", electric: 3, cost: 1, description: "3 electric damages"},
+      {name: "electric", electric: 3, cost: 1, description: "3 electric damages"}
+    ],
+    bug: [
+      {name: "bug", bug: 3, cost: 1, description: "3 bug damages"},
+      {name: "bug", bug: 3, cost: 1, description: "3 bug damages"},
+      {name: "bug", bug: 3, cost: 1, description: "3 bug damages"}
+    ],
+    dark: [
+      {name: "dark", dark: 3, cost: 1, description: "3 dark damages"},
+      {name: "dark", dark: 3, cost: 1, description: "3 dark damages"},
+      {name: "dark", dark: 3, cost: 1, description: "3 dark damages"}
+    ],
+    dragon: [
+      {name: "dragon", dragon: 3, cost: 1, description: "3 dragon damages"},
+      {name: "dragon", dragon: 3, cost: 1, description: "3 dragon damages"},
+      {name: "dragon", dragon: 3, cost: 1, description: "3 dragon damages"}
+    ],
+    fairy: [
+      {name: "fairy", fairy: 3, cost: 1, description: "3 fairy damages"},
+      {name: "fairy", fairy: 3, cost: 1, description: "3 fairy damages"},
+      {name: "fairy", fairy: 3, cost: 1, description: "3 fairy damages"}
+    ],
+    fighting: [
+      {name: "fighting", fighting: 3, cost: 1, description: "3 fighting damages"},
+      {name: "fighting", fighting: 3, cost: 1, description: "3 fighting damages"},
+      {name: "fighting", fighting: 3, cost: 1, description: "3 fighting damages"}
+    ],
+    flying: [
+      {name: "flying", flying: 3, cost: 1, description: "3 flying damages"},
+      {name: "flying", flying: 3, cost: 1, description: "3 flying damages"},
+      {name: "flying", flying: 3, cost: 1, description: "3 flying damages"}
+    ],
+    ghost: [
+      {name: "ghost", ghost: 3, cost: 1, description: "3 ghost damages"},
+      {name: "ghost", ghost: 3, cost: 1, description: "3 ghost damages"},
+      {name: "ghost", ghost: 3, cost: 1, description: "3 ghost damages"}
+    ],
+    ground: [
+      {name: "ground", ground: 3, cost: 1, description: "3 ground damages"},
+      {name: "ground", ground: 3, cost: 1, description: "3 ground damages"},
+      {name: "ground", ground: 3, cost: 1, description: "3 ground damages"}
+    ],
+    ice: [
+      {name: "ice", ice: 3, cost: 1, description: "3 ice damages"},
+      {name: "ice", ice: 3, cost: 1, description: "3 ice damages"},
+      {name: "ice", ice: 3, cost: 1, description: "3 ice damages"}
+    ],
+    normal: [
+      {name: "normal", normal: 3, cost: 1, description: "3 normal damages"},
+      {name: "normal", normal: 3, cost: 1, description: "3 normal damages"},
+      {name: "normal", normal: 3, cost: 1, description: "3 normal damages"}
+    ],
+    poison: [
+      {name: "poison", poison: 3, cost: 1, description: "3 poison damages"},
+      {name: "poison", poison: 3, cost: 1, description: "3 poison damages"},
+      {name: "poison", poison: 3, cost: 1, description: "3 poison damages"}
+    ],
+    psychic: [
+      {name: "psychic", psychic: 3, cost: 1, description: "3 psychic damages"},
+      {name: "psychic", psychic: 3, cost: 1, description: "3 psychic damages"},
+      {name: "psychic", psychic: 3, cost: 1, description: "3 psychic damages"}
+    ],
+    rock: [
+      {name: "rock", rock: 3, cost: 1, description: "3 rock damages"},
+      {name: "rock", rock: 3, cost: 1, description: "3 rock damages"},
+      {name: "rock", rock: 3, cost: 1, description: "3 rock damages"}
+    ],
+    steel: [
+      {name: "steel", steel: 3, cost: 1, description: "3 steel damages"},
+      {name: "steel", steel: 3, cost: 1, description: "3 steel damages"},
+      {name: "steel", steel: 3, cost: 1, description: "3 steel damages"}
+    ],
+    other: []
   },
   allCards: {
     phy: [
@@ -96,6 +172,55 @@ const startStatus = {
     ],
     water: [
       {name: "water", water: 3, cost: 1, description: "3 water damages"}
+    ],
+    electric: [
+      {name: "electric", electric: 3, cost: 1, description: "3 electric damages"},
+    ],
+    bug: [
+      {name: "bug", bug: 3, cost: 1, description: "3 bug damages"},
+    ],
+    dark: [
+      {name: "dark", dark: 3, cost: 1, description: "3 dark damages"},
+    ],
+    dragon: [
+      {name: "dragon", dragon: 3, cost: 1, description: "3 dragon damages"},
+    ],
+    fairy: [
+      {name: "fairy", fairy: 3, cost: 1, description: "3 fairy damages"},
+    ],
+    fighting: [
+      {name: "fighting", fighting: 3, cost: 1, description: "3 fighting damages"},
+    ],
+    flying: [
+      {name: "flying", flying: 3, cost: 1, description: "3 flying damages"},
+    ],
+    ghost: [
+      {name: "ghost", ghost: 3, cost: 1, description: "3 ghost damages"},
+    ],
+    ground: [
+      {name: "ground", ground: 3, cost: 1, description: "3 ground damages"},
+    ],
+    ice: [
+      {name: "ice", ice: 3, cost: 1, description: "3 ice damages"},
+    ],
+    normal: [
+      {name: "normal", normal: 3, cost: 1, description: "3 normal damages"},
+    ],
+    poison: [
+      {name: "poison", poison: 3, cost: 1, description: "3 poison damages"},
+    ],
+    psychic: [
+      {name: "psychic", psychic: 3, cost: 1, description: "3 psychic damages"},
+    ],
+    rock: [
+      {name: "rock", rock: 3, cost: 1, description: "3 rock damages"},
+    ],
+    steel: [
+      {name: "steel", steel: 3, cost: 1, description: "3 steel damages"},
+    ],
+    other: [
+      {name: "Pokemon Ball", ball: true, cost: 3, description: 'Help catch a pokemon'},
+      {name: "Pokemon Healthpack", healing: 10, cost: 3, sdescription: 'Add 10 HP'}
     ]
   },
   cardsAfterWin: [],
@@ -236,7 +361,7 @@ class Game extends Component {
   }
 
   getFirstPokemon(attribute) {
-    let name = window.prompt("name?");
+    let name = window.prompt("Pick a name for your pokemon");
     let obj = {
       name: name,
       level: {
@@ -278,7 +403,7 @@ class Game extends Component {
     this.setState({cards: cards});
   }
 
-  startGame() {
+  async startGame() {
     if (this.state.start) return;
     let worldMap = this.state.worldMap;
     let level = this.state.level;
@@ -375,14 +500,44 @@ class Game extends Component {
       let pokemonCol = getRandomInt(colOfMap);
       if (worldMap[pokemonRow][pokemonCol].attribute.name === "") {
         let health = getRandomInt(20*level) + 10;
-        let random = getRandomInt(3);
+        let random = getRandomInt(120);
         let attribute;
-        if (random === 0) {
+        if (random < 15) {
           attribute = "fire";
-        } else if (random === 1) {
+        } else if (random < 30) {
           attribute = "water";
+        } else if (random < 45) {
+          attribute = "grass";
+        } else if (random < 55) {
+          attribute = "electric";
+        } else if (random < 58) {
+          attribute = "dark";
+        } else if (random < 61) {
+          attribute = "dragon";
+        } else if (random < 69){
+          attribute = "bug"
+        } else if (random < 72) {
+          attribute = "fairy";
+        } else if (random < 80) {
+          attribute = "fighting";
+        } else if (random < 85) {
+          attribute = "flying";
+        } else if (random < 88) {
+          attribute = "ghost";
+        } else if (random < 93) {
+          attribute = "ground";
+        } else if (random < 98){
+          attribute = "ice"
+        } else if (random < 103) {
+          attribute = "normal";
+        } else if (random < 106) {
+          attribute = "poison";
+        } else if (random < 111) {
+          attribute = "phychic";
+        } else if (random < 116) {
+          attribute = "rock";
         } else {
-          attribute = "grass"
+          attribute = "steel";
         }
         worldMap[pokemonRow][pokemonCol].attribute = {
           name: "pokemon",
@@ -429,12 +584,13 @@ class Game extends Component {
 
     let arr = this.state.position;
     arr.push(startRow, startCol);
-    this.setState({
+    await this.setState({
       level: level,
       worldMap: worldMap,
       start: true,
       position: arr,
     });
+    console.log("end startgame",this.state)
   }
 
   async endGameDirectly() {
@@ -479,7 +635,7 @@ class Game extends Component {
 
 
 
-  move(row, col) {
+  async move(row, col) {
     if (!this.state.start) return;
     let rowOfMap = this.state.row;
     let colOfMap = this.state.col;
@@ -503,8 +659,20 @@ class Game extends Component {
       if (this.state.worldMap[row][col].attribute.name === "pokemon") {
         this.setState({status: "fight"});
       } else if (this.state.worldMap[row][col].attribute.name === "end") {
+        // 曾经写过但是失败的code sad :(
+        // await this.setState(Object.assign({}, this.state, {
+        // worldMap: generateEmptyMap(10, 20),
+        // position: [],
+        // status: "free",
+        // cardsAfterWin: [],
+        // savingSpots: 1,
+        // currentPage: "",
+        // loads: []
+        // }));
+        // console.log('aljsfladsshenyu', this.state, this.state.worldMap);
+        // await this.startGame()
         window.alert("Congratulations!")
-        this.endGame();
+        this.endGame()
       } else if (this.state.worldMap[row][col].attribute.name === "merchant") {
         this.setState({status: 'merchant'})
       } else if (this.state.worldMap[row][col].attribute.name === 'event') {
@@ -525,6 +693,10 @@ class Game extends Component {
     while (arr.length !== 0) {
       arr.pop();
     }
+    // let arrAllCards = [];
+    // for (let key in this.state.allCards) {
+    //   arrAllCards = arrAllCards.concat(this.state.allCards[key]);
+    // }
     let random = getRandomInt(3) + 1;
     while (random > 0) {
       arr.push(this.state.cards[getRandomInt(this.state.cards.length)]);
@@ -565,7 +737,7 @@ class Game extends Component {
       let money = this.state.money;
       money -= 10;
       newArr.push({name: "Pokemon Healthpack", healing: 10, cost: 3, description: 'Add 10 HP'});
-      arrCan.phy.push({name: "Pokemon Healthpack", healing: 10, cost: 3, sdescription: 'Add 10 HP'});
+      arrCan.phy.push({name: "Pokemon Healthpack", healing: 10, cost: 3, description: 'Add 10 HP'});
       this.setState({
         cards: newArr,
         money: money,
@@ -580,7 +752,14 @@ class Game extends Component {
     let arrAfterWin = this.state.cardsAfterWin;
     let card = arrAfterWin.splice(index, 1);
     arrCards.push(card[0]);
-    arrCardsCanBeused.phy.push(card[0]);
+    if (card[0].name === "attack" || card[0].name === "defence" || card[0].name === "healing" || card[0].name === "get two cards") {
+      arrCardsCanBeused.phy.push(card[0]);
+    } else if (card[0].name === "Pokemon Ball" || card[0].name === "Pokemon Healthpack") {
+      arrCardsCanBeused.other.push(card[0]);
+    } else {
+      let name = card[0].name;
+      arrCardsCanBeused[name].push(card[0]);
+    }
     this.setState({
       cards: arrCards,
       cardsAfterWin: arrAfterWin,
@@ -743,7 +922,7 @@ class Game extends Component {
 
       let colors = ['red', 'orange', 'yellow', 'olive', 'green'];
       let options = [];
-      this.state.allPokemon.map(pokemon => {
+      this.state.allPokemon.forEach(pokemon => {
         if (pokemon.attribute === "fire") {
           options.push({
             label: {
@@ -757,7 +936,142 @@ class Game extends Component {
           options.push({
             label: {
               icon: "theme",
-              content: ''
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "grass") {
+          options.push({
+            label: {
+              icon: "leaf",
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "normal") {
+          options.push({
+            label: {
+              icon: "circle",
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "fighting") {
+          options.push({
+            label: {
+              icon: "hand rock",
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "flying") {
+          options.push({
+            label: {
+              icon: "earlybirds",
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "poison") {
+          options.push({
+            label: {
+              icon: "flask",
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "ground") {
+          options.push({
+            label: {
+              icon: "blackberry",
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "rock") {
+          options.push({
+            label: {
+              icon: "chart area",
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "bug") {
+          options.push({
+            label: {
+              icon: "bug",
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "ghost") {
+          options.push({
+            label: {
+              icon: 'snapchat ghost',
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "steel") {
+          options.push({
+            label: {
+              icon: "settings",
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        }else if (pokemon.attribute === "electric") {
+          options.push({
+            label: {
+              icon: "bolt",
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "psychic") {
+          options.push({
+            label: {
+              icon: "podcast",
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "ice") {
+          options.push({
+            label: {
+              icon: "snowflake",
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "dragon") {
+          options.push({
+            label: {
+              icon: "chess knight",
+              content: pokemon.name
+            },
+            currentHealth: pokemon.health.currentHealth,
+            maxHealth: pokemon.health.maxHealth
+          })
+        } else if (pokemon.attribute === "dark") {
+          options.push({
+            label: {
+              icon: "low vision",
+              content: pokemon.name
             },
             currentHealth: pokemon.health.currentHealth,
             maxHealth: pokemon.health.maxHealth
@@ -765,8 +1079,8 @@ class Game extends Component {
         } else {
           options.push({
             label: {
-              icon: "tree",
-              content: ''
+              icon: "balance scale",
+              content: pokemon.name
             },
             currentHealth: pokemon.health.currentHealth,
             maxHealth: pokemon.health.maxHealth
@@ -788,26 +1102,25 @@ class Game extends Component {
         );
       });
       if (!this.state.start) {
-
-        return (<div>
-          <Container style={{ margin: '100px'}}>
-          <div>
-            <Button style={{width: '150px'}} content='New Game' primary onClick={() => this.startGame()}/>
+        return (<div className="home">
+          <Container className="container">
+          <div className="home-btn">
+            <Button color="gray" style={{width: '150px'}} content='New Game' onClick={() => this.startGame()}/>
           </div>
-          <div>
-            <Button style={{width: '150px'}} content='Continue' secondary onClick={() => this.continue()}/>
+          <div className="home-btn">
+            <Button color="gray" style={{width: '150px'}} content='Continue' onClick={() => this.continue()}/>
           </div>
-          <div>
-            <Button style={{width: '150px'}} content='Load Game' secondary onClick={() => this.showLoad()}/>
+          <div className="home-btn">
+            <Button color="gray" style={{width: '150px'}} content='Load Game' onClick={() => this.showLoad()}/>
           </div>
-          <div>
-            <Button style={{width: '150px'}} content='Settings' secondary onClick={() => this.setState({currentPage: "settings"})} />
+          <div className="home-btn">
+            <Button color="gray" style={{width: '150px'}} content='Settings' onClick={() => this.setState({currentPage: "settings"})} />
           </div>
-          <div>
-            <Button style={{width: '150px'}} content='About' secondary onClick={() => this.setState({currentPage: "about"})}/>
+          <div className="home-btn">
+            <Button color="gray" style={{width: '150px'}} content='About' onClick={() => this.setState({currentPage: "about"})}/>
           </div>
-          <div>
-            <Button style={{width: '150px'}} content='Logout' secondary onClick={() => this.props.logout()}/>
+          <div className="home-btn">
+            <Button color="gray" style={{width: '150px'}} content='Logout' onClick={() => this.props.logout()}/>
           </div>
         </Container>
 
@@ -828,7 +1141,7 @@ class Game extends Component {
         </ReactModal>
       </div>)
       } else {
-        return <div>
+        return <div className={this.state.pokemon.attribute}>
           <Sound
             url='http://www.170mv.com/kw/other.web.rc01.sycdn.kuwo.cn/resource/n1/15/99/1879608878.mp3'
             playStatus={Sound.status.PLAYING}
@@ -868,7 +1181,7 @@ class Game extends Component {
             <Button className="btn-top" animated='vertical' onClick={() => this.goHome()}>
               <Button.Content hidden>Home</Button.Content>
               <Button.Content visible>
-                <Icon name='home' />
+                <Icon name='home'/>
               </Button.Content>
             </Button>
           </div>
@@ -987,7 +1300,7 @@ class Game extends Component {
             <ul>
               {
                 this.state.cards.map((cards, i) => {
-                  return <Card card={this.state.cards[i]}/>
+                  return <div className="card"><Cards card={this.state.cards[i]}/></div>
                 })
               }
             </ul>
@@ -1000,10 +1313,14 @@ class Game extends Component {
             <div className='text'>
               <h3>Congratulations! You won!</h3>
               <p>Money You Get: {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.money}</p>
-              <p>Cards You Get (Click to Get)</p>
-              <div className='cards'>{this.state.cardsAfterWin.map((cardAfterWin, i) => {
-                return <div className="info1" onClick={() => this.addCard(i)}>{cardAfterWin.name}: {cardAfterWin.description}</div>
-              })}</div>
+              <p>Cards You Get: (Click to Get)</p>
+              <ul>
+                {
+                  this.state.cardsAfterWin.map((cardAfterWin, i) => {
+                    return <div className="card" onClick={() => this.addCard(i)}><Cards card={cardAfterWin}/></div>
+                  })
+                }
+              </ul>
             </div>
             <button className="choiceA" onClick={() => this.closeModal4()}>Back</button>
           </ReactModal>

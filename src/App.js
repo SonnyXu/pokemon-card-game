@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Game from './Game.js';
 import hash from 'object-hash';
 
-import {Button, Container, Input} from 'semantic-ui-react';
+import { Button, Container, Input, Message } from 'semantic-ui-react';
 import './css/App.css'
 
 class App extends Component {
@@ -12,6 +12,7 @@ class App extends Component {
       currentPage: "login",
       username: "",
       password: "",
+      err: "",
       info: null,
       fightInfo: null
     }
@@ -50,6 +51,7 @@ class App extends Component {
 
   goLogin() {
     this.setState({
+      err: "",
       username: "",
       password: "",
       currentPage: "login"
@@ -58,6 +60,7 @@ class App extends Component {
 
   goRegister() {
     this.setState({
+      err: "",
       username: "",
       password: "",
       currentPage: "register"
@@ -74,6 +77,7 @@ class App extends Component {
 
   goMenu() {
     this.setState({
+      err: "",
       username: "",
       password: "",
       currentPage: "menu"
@@ -81,6 +85,10 @@ class App extends Component {
   }
 
   register() {
+    if (this.state.password.length < 6) {
+      this.setState({err: "register password"});
+      return;
+    }
     const username = hash(this.state.username);
     const password = hash(this.state.password);
     if (username && password) {
@@ -97,18 +105,16 @@ class App extends Component {
       .then(res => res.json())
       .then((resp) => {
         if (resp.username) {
+          this.setState({err: ""});
           this.goLogin()
         } else if (resp.err === "repetitve username") {
-          window.alert("Username already exist. Pick a different one.");
+          this.setState({err: "register username"})
         }
       })
       .catch((err) => {
         // network error
         console.log('error', err)
       })
-    } else {
-      alert('Username and password must not be empty!')
-      this.goRegister()
     }
   }
 
@@ -126,21 +132,18 @@ class App extends Component {
       })
       .then((res) => res.json())
       .then((resp) => {
-        if (resp.status) {
+        if (resp.status && resp.token) {
           localStorage.setItem('token', resp.token);
+          this.setState({err: ""});
           this.goMenu()
         } else {
-          window.alert("Incorrect username or password");
-          this.goLogin();
+          this.setState({err: "login incorrect"})
         }
       })
       .catch((err) => {
         // network error
         console.log('error', err)
       })
-    } else {
-      alert('Username and password must not be empty!')
-      this.goLogin()
     }
   }
 
@@ -155,50 +158,68 @@ class App extends Component {
   render() {
     if (this.state.currentPage === "register") {
       return (
-       <Container style={{ margin: '100px'}}>
-        <h1 className="head">Register</h1>
-        <div className="app">
-          <label for="username" style={{marginRight: '20px'}}>Username </label>
-          <Input type="text" id="username" name="username" value={this.state.username} onChange={(e) => this.usernameChange(e)}/>
-        </div>
-        <div className="app">
-          <label for="password" style={{marginRight: '20px'}}>Password </label>
-          <Input type="password" id="password" name="password" value={this.state.password} onChange={(e) => this.passwordChange(e)}/>
-        </div>
-        <div className="app-btn">
+        <div className="register">
+        <Container>
+          <h1 className="head">Register</h1>
           <div className="app">
-            <Button style={{width: '150px'}} content='Register' primary onClick={() => this.register()} />
+            <label for="username" style={{marginRight: '20px'}}><strong>Username </strong></label>
+            <Input type="text" id="username" name="username" value={this.state.username} onChange={(e) => this.usernameChange(e)}/>
           </div>
           <div className="app">
-            <Button style={{width: '150px'}} content='Go to Login' secondary onClick={() => this.goLogin()} />
+            <label for="password" style={{marginRight: '20px'}}><strong>Password </strong></label>
+            <Input type="password" id="password" name="password" value={this.state.password} onChange={(e) => this.passwordChange(e)}/>
           </div>
-        </div>
-      </Container>)
-    } else if (this.state.currentPage === "login") {
-      return (
-        <Container style={{ margin: '100px'}}>
-        <h1 className="head">Login</h1>
-        <div className="app">
-          <label htmlFor="username" style={{marginRight: '20px'}}>Username </label>
-          <Input type="text" id="username" name="username" value={this.state.username} onChange={(e) => this.usernameChange(e)}/>
-        </div>
-        <div className="app">
-          <label htmlFor="password" style={{marginRight: '20px'}}>Password </label>
-          <Input type="password" id="password" name="password" value={this.state.password} onChange={(e) => this.passwordChange(e)}/>
-        </div>
-        <div className="app-btn">
-          <div className="app">
-            <Button style={{width: '150px'}} content='Login' primary onClick={() => this.login(hash(this.state.username), hash(this.state.password))} />
+          <div className="app-btn">
+            <div className="app">
+              <Button style={{width: '150px'}} content='Register' primary onClick={() => this.register()} />
+            </div>
+            <div className="app">
+              <Button style={{width: '150px'}} content='Login' secondary onClick={() => this.goLogin()} />
+            </div>
+            {this.state.err.length > 0 ?
+              <Message className="message" negative>
+                <Message.Header style={{opacity: 1}}>Error</Message.Header>
+                {this.state.err === "register password" ? <p style={{opacity: 1}}>Your password must be 6 characters or more</p> : <p style={{opacity: 1}}>Username already existed!</p>}
+              </Message> :
+              <div></div>
+            }
           </div>
-          <div className="app">
-            <Button style={{width: '150px'}} content='Go to Register' secondary onClick={() => this.goRegister()} />
-          </div>
-        </div>
-      </Container>)
-    } else {
-      return <Game logout={() => this.logout()}/>
+        </Container>
+      </div>)
+      } else if (this.state.currentPage === "login") {
+        return (
+          <div className="login">
+          <Container>
+            <h1 className="head">Login</h1>
+            <div className="app">
+              <label htmlFor="username" style={{marginRight: '20px'}}><strong>Username </strong></label>
+              <Input type="text" id="username" name="username" value={this.state.username} onChange={(e) => this.usernameChange(e)}/>
+            </div>
+            <div className="app">
+              <label htmlFor="password" style={{marginRight: '20px'}}><strong>Password </strong></label>
+              <Input type="password" id="password" name="password" value={this.state.password} onChange={(e) => this.passwordChange(e)}/>
+            </div>
+            <div className="app-btn">
+              <div className="app">
+                <Button style={{width: '150px'}} content='Login' primary onClick={() => this.login(hash(this.state.username), hash(this.state.password))} />
+              </div>
+              <div className="app">
+                <Button style={{width: '150px'}} content='Register' secondary onClick={() => this.goRegister()} />
+              </div>
+              {this.state.err.length > 0 ?
+                <Message className="message" negative>
+                  <Message.Header style={{opacity: 1}}>Error</Message.Header>
+                  <p style={{opacity: 1}}>Invalid username or password!</p>
+                </Message> :
+                <div></div>
+              }
+            </div>
+          </Container>
+        </div>)
+        } else {
+          return <Game logout={() => this.logout()}/>
+        }
+      }
     }
-  }
-}
 
-export default App;
+    export default App;

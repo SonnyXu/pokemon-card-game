@@ -1,51 +1,65 @@
 .Area-Btn {
-   background-color: white;
-   height:50px;
-   width:50px;
-   cursor:pointer;
+  opacity: 0.2;
+  height:50px;
+  width:50px;
+  cursor:pointer;
 }
+
 .Area-Btn-StartEnd {
-   background-color: yellow;
-   height:50px;
-   width:50px;
-   cursor:pointer;
+  opacity: 0.8;
+  background-color: yellow;
+  height:50px;
+  width:50px;
+  cursor:pointer;
 }
+
 .Area-Btn-Rock {
-   background-color: grey;
-   height:50px;
-   width:50px;
-   cursor:pointer;
+  opacity: 0.8;
+  background-color: grey;
+  height:50px;
+  width:50px;
+  cursor:pointer;
 }
-.Area-Btn-Pokemon {
-   background-color: blue;
-   height:50px;
-   width:50px;
-   cursor:pointer;
+
+.Area-Btn-Pokemon {  opacity: 0.8;
+  background-color: blue;
+  height:50px;
+  width:50px;
+  cursor:pointer;
 }
+
 .Area-Btn-Position {
+  opacity: 0.8;
   background-color: coral;
   height:50px;
   width:50px;
   cursor:pointer;
 }
+
 .Area-Btn-Undiscovered {
+  opacity: 0.8;
   background-color: black;
   height: 50px;
   width:50px;
   cursor:pointer;
 }
+
 .Area-Btn-Merchant {
+  opacity: 0.8;
   background-color: skyblue;
   height: 50px;
   width: 50px;
   cursor:pointer;
 }
+
 .Area-Btn-Random {
+  opacity: 0.8;
   background-color: red;
   height:50px;
   width:50px;
   cursor:pointer;
 }
+
 .Area-Btn-Position img {
   display: block;
   height: 48px;
@@ -53,21 +67,26 @@
   margin-left: -7px;
   margin-top: -1px;
 }
+
 .Area-Btn-Rock img {
   display: block;
   height: 35px;
   width: 35px;
 }
+
+
 .Area-Btn-StartEnd img {
   display: block;
   height: 35px;
   width: 35px;
 }
+
 .Area-Btn-Merchant img {
   display: block;
   height: 35px;
   width: 35px;
 }
+
 .Area-Btn-Random img {
   display: block;
   height: 48px;
@@ -75,6 +94,7 @@
   margin-left: -7px;
   margin-top: -1px;
 }
+
 .Area-Btn-Pokemon img {
   display: block;
   height: 48px;

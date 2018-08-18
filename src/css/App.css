@@ -11,4 +11,36 @@
 .app-btn {
   margin: 40px;
   text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.register {
+    width: 100%;
+    height: 100%;
+    background-image: url("https://wallpapercave.com/wp/cqhO8rQ.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: left bottom;
+}
+
+.login {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.pinimg.com/originals/d4/d6/2a/d4d62abc5e3def4243b60875d007930d.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.message {
+  width: 50%;
+  opacity: 0.5;
+}
+
+div.ui.container {
+  padding-left: 0px !important;
 }

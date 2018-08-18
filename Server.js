@@ -40,7 +40,7 @@ app.post('/login', function(req, res) {
       }
     })
   } else {
-    res.status(403).send({err: 'Invalid username or password.'});
+    res.json({err: 'Invalid username or password.'});
   }
 });
 

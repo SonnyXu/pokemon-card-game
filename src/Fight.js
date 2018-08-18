@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import ReactModal from 'react-modal';
 
-import { Card, Button, Icon, Loader, Header } from 'semantic-ui-react'
+import Cards from './Card.js'
+
+import { Card, Button, Icon, Header } from 'semantic-ui-react'
 import './css/Fight.css'
 
 function getRandomInt(max) {
@@ -58,12 +60,7 @@ class Fight extends Component {
     this.state = Object.assign({}, state, startStatus, data, {status: "fight"});
   }
 
-  // componentDidMount() {
-  //   this.setState({savingStatus: false});
-  // }
-
   async saveFightStatus() {
-    console.log(this.state);
     if (this.state.showSave) {
       this.setState({savingStatus: true})
     } else {
@@ -139,14 +136,114 @@ class Fight extends Component {
     })
   }
 
-
-
   compareMag(enemyAttr, myAttr) {
-    if (enemyAttr === myAttr) return 0;
-    else if ((myAttr === "fire" && enemyAttr === "grass")
-    ||(myAttr === "water" && enemyAttr === "fire")
-    ||(myAttr === "grass" && enemyAttr === "water")) return 1;
-    else return -1;
+    let attributeTable = {
+      normal: {
+        "0": ["ghost"],
+        "0.5": ["rock", "steel"],
+        "2": []
+      },
+      fighting: {
+        "0":["ghost"],
+        "0.5": ["flying", "poison", "bug", "psychic", "fairy"],
+        "2": ["normal", "rock", "steel", "ice", "dark"]
+      },
+      flying: {
+        "0": [],
+        "0.5": ["rock", "electric", "steel"],
+        "2": ["fighting", "bug", "grass"]
+      },
+      poison: {
+        "0": ["steel"],
+        "0.5": ["poison", "ground", "rock", "ghost"],
+        "2": ["grass", "fairy"]
+      },
+      ground: {
+        "0": ["flying"],
+        "0.5": ["bug", "grass"],
+        "2": ["poison", "rock", "steel", "fire", "electric"]
+      },
+      rock: {
+        "0": [],
+        "0.5": ["fighting", "ground", 'steel'],
+        "2": ['flying', 'bug', 'fire', 'ice']
+      },
+      bug: {
+        "0": [],
+        "0.5": ["fighting", "flying", 'poison', "ghost", "steel", "fire", "fairy"],
+        "2": ['grass', 'phychic', 'dark']
+      },
+      ghost: {
+        "0": ["normal"],
+        "0.5": ["dark"],
+        "2": ['ghost', 'phychic']
+      },
+      steel: {
+        "0": [],
+        "0.5": ["steel", "fire", "water", "electric"],
+        "2": ['rock', 'ice', "fairy"]
+      },
+      fire: {
+        "0": [],
+        "0.5": ["rock", "fire", "water", "dragon"],
+        "2": ['bug', 'steel', "grass", "ice"]
+      },
+      water: {
+        "0": [],
+        "0.5": ["water", "grass", 'dragon'],
+        "2": ['ground', 'rock', 'fire']
+      },
+      grass: {
+        "0": [],
+        "0.5": ["flying", 'poison', "steel", 'bug', 'fire', 'grass', 'dragon'],
+        "2": ["ground", "rock", "water"]
+      },
+      electric: {
+        "0": ["ground"],
+        "0.5": ["grass", 'electric', 'dragon'],
+        "2": ['flying', 'water']
+      },
+      psychic: {
+        "0": ["dark"],
+        "0.5": ["psychic", "steel"],
+        "2": ['fighting', 'poison']
+      },
+      ice: {
+        "0": [],
+        "0.5": ["fire", "steel", 'water', 'ice'],
+        "2": ['flying', 'ground', 'grass', 'dragon']
+      },
+      dragon: {
+        "0": ["fairy"],
+        "0.5": ["steel"],
+        "2": ['dragon']
+      },
+      dark: {
+        "0": [],
+        "0.5": ["fighting", "dark", 'fairy'],
+        "2": ['ghost', 'psychic']
+      },
+      fairy: {
+        "0": [],
+        "0.5": ["posion", "steel", 'fire'],
+        "2": ['fighting', 'dark', 'dragon']
+      }
+    }
+    let result = [1, 1];
+    let obj1 = attributeTable[myAttr];
+    for (let key in obj1) {
+      if (obj1[key].indexOf(enemyAttr) !== -1) {
+        result[0] = parseFloat(key);
+      }
+    }
+    let obj2 = attributeTable[enemyAttr];
+    for (let key in obj2) {
+      if (obj2[key].indexOf(myAttr) !== -1) {
+        result[1] = parseFloat(key);
+      }
+    }
+    // console.log(result);
+    return result;
   }
 
   nextRound() {
@@ -164,24 +261,14 @@ class Fight extends Component {
     if (enemyInformation.defence < pokemon.attack.phy) {
       enemyInformation.health.currentHealth -= pokemon.attack.phy - enemyInformation.defence;
     }
-    if (this.compareMag(enemyAttr, myAttr) > 0) {
-      if (enemyInformation.attack.mag > 2*pokemon.attack.mag) {
-        pokemon.health.currentHealth -= enemyInformation.attack.mag - 2*pokemon.attack.mag;
-      } else {
-        enemyInformation.health.currentHealth -= 2*pokemon.attack.mag - enemyInformation.attack.mag
-      }
-    } else if (this.compareMag(enemyAttr, myAttr) < 0) {
-      if (2*enemyInformation.attack.mag > pokemon.attack.mag) {
-        pokemon.health.currentHealth -= 2*enemyInformation.attack.mag - pokemon.attack.mag;
-      } else {
-        enemyInformation.health.currentHealth -= pokemon.attack.mag - 2*enemyInformation.attack.mag
-      }
+
+    let arr = this.compareMag(enemyAttr, myAttr);
+    let myMagAttack = pokemon.attack.mag * arr[0];
+    let enemyMagAttack = enemyInformation.attack.mag * arr[1];
+    if (myMagAttack > enemyMagAttack) {
+      enemyInformation.health.currentHealth -= myMagAttack - enemyMagAttack;
     } else {
-      if (enemyInformation.attack.mag > pokemon.attack.mag) {
-        pokemon.health.currentHealth -= enemyInformation.attack.mag - pokemon.attack.mag;
-      } else {
-        enemyInformation.health.currentHealth -= pokemon.attack.mag - enemyInformation.attack.mag
-      }
+      pokemon.health.currentHealth -= enemyMagAttack - myMagAttack;
     }
 
     this.setState({
@@ -315,6 +402,51 @@ class Fight extends Component {
     if (this.state.cardsHold.grass) {
       obj.attack.mag += this.state.cardsHold.grass;
     }
+    if (this.state.cardsHold.normal) {
+      obj.attack.mag += this.state.cardsHold.normal;
+    }
+    if (this.state.cardsHold.fighting) {
+      obj.attack.mag += this.state.cardsHold.fighting;
+    }
+    if (this.state.cardsHold.flying) {
+      obj.attack.mag += this.state.cardsHold.flying;
+    }
+    if (this.state.cardsHold.poison) {
+      obj.attack.mag += this.state.cardsHold.poison;
+    }
+    if (this.state.cardsHold.ground) {
+      obj.attack.mag += this.state.cardsHold.ground;
+    }
+    if (this.state.cardsHold.rock) {
+      obj.attack.mag += this.state.cardsHold.rock;
+    }
+    if (this.state.cardsHold.bug) {
+      obj.attack.mag += this.state.cardsHold.bug;
+    }
+    if (this.state.cardsHold.ghost) {
+      obj.attack.mag += this.state.cardsHold.ghost;
+    }
+    if (this.state.cardsHold.steel) {
+      obj.attack.mag += this.state.cardsHold.steel;
+    }
+    if (this.state.cardsHold.electric) {
+      obj.attack.mag += this.state.cardsHold.electric;
+    }
+    if (this.state.cardsHold.psychic) {
+      obj.attack.mag += this.state.cardsHold.psychic;
+    }
+    if (this.state.cardsHold.ice) {
+      obj.attack.mag += this.state.cardsHold.ice;
+    }
+    if (this.state.cardsHold.dragon) {
+      obj.attack.mag += this.state.cardsHold.dragon;
+    }
+    if (this.state.cardsHold.dark) {
+      obj.attack.mag += this.state.cardsHold.dark;
+    }
+    if (this.state.cardsHold.fairy) {
+      obj.attack.mag += this.state.cardsHold.fairy;
+    }
     if (this.state.cardsHold.defence) {
       obj.defence += this.state.cardsHold.defence;
     }
@@ -414,7 +546,7 @@ class Fight extends Component {
       );
     });
 
-    return (<div>
+    return (<div className={enemyAttr + '1'}>
       <div className="start-and-end">
         <Button className="btn-top" animated='vertical' onClick={() => this.showLoad()}>
           <Button.Content hidden>Load</Button.Content>
@@ -443,7 +575,7 @@ class Fight extends Component {
         <Button className="btn-top" animated='vertical' onClick={() => this.props.endGame()}>
           <Button.Content hidden>End</Button.Content>
           <Button.Content visible>
-            <Icon name='power' />
+            <Icon name='close' />
           </Button.Content>
         </Button>
         <Button className="btn-top" animated='vertical' onClick={() => this.props.goHome()}>
@@ -455,10 +587,10 @@ class Fight extends Component {
       </div>
 
       <div className='fight'>
-        <div style={{color: 'red'}}><strong>Enemy Information</strong></div>
+        <div className="strong" style={{color: 'red'}}><strong>Enemy Information</strong></div>
         <div className="health">
           <Header as='h2'>
-            <Icon.Group size='big'>
+            <Icon.Group >
               <Icon name='plus square' />
             </Icon.Group>
             {currentHealth}/{maxHealth}
@@ -466,45 +598,150 @@ class Fight extends Component {
         </div>
         <div className="imageThree">
           <Header className="images" as='h2'>
-            <Icon.Group size='big'>
+            <Icon.Group >
               <Icon name='quidditch' />
             </Icon.Group>
             {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.phy}
           </Header>
           {enemyAttr === "fire" ?
           <Header className="images" as='h2'>
-            <Icon.Group size='big'>
+            <Icon.Group >
               <Icon name='gripfire' />
             </Icon.Group>
             {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
           </Header>
           : enemyAttr === "water" ?
           <Header className="images" as='h2'>
-            <Icon.Group size='big'>
+            <Icon.Group >
               <Icon name='theme' />
             </Icon.Group>
             {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
           </Header>
           : enemyAttr === "grass" ?
           <Header className="images" as='h2'>
-            <Icon.Group size='big'>
-              <Icon name='tree' />
+            <Icon.Group >
+              <Icon name='leaf' />
             </Icon.Group>
             {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
           </Header>
-          : <img alt="" src="#"/>}
+          : enemyAttr === "normal" ?
           <Header className="images" as='h2'>
-            <Icon.Group size='big'>
+            <Icon.Group >
+              <Icon name='circle' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : enemyAttr === "fighting" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='hand rock' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : enemyAttr === "flying" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='earlybirds' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : enemyAttr === "poison" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='flask' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : enemyAttr === "ground" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='blackberry' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : enemyAttr === "rock" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='chart area' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : enemyAttr === "bug" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='bug' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : enemyAttr === "ghost" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='snapchat ghost' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : enemyAttr === "steel" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='settings' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : enemyAttr === "electric" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='bolt' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : enemyAttr === "psychic" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='unhide' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : enemyAttr === "ice" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='snowflake' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : enemyAttr === "dragon" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='chess knight' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : enemyAttr === "dark" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='low vision' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : enemyAttr === "fairy" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='balance scale' />
+            </Icon.Group>
+            {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.attack.mag}
+          </Header>
+          : <img alt="" src="#"/>
+        }
+          <Header className="images" as='h2'>
+            <Icon.Group >
               <Icon name='shield' />
             </Icon.Group>
             {this.state.worldMap[this.state.position[0]][this.state.position[1]].attribute.defence}
           </Header>
         </div>
-        <br/>
-        <div><strong>My information</strong></div>
+        <div className="strong" style={{marginTop: "20px"}}><strong>My information</strong></div>
         <div className="health">
           <Header as='h2'>
-            <Icon.Group size='big'>
+            <Icon.Group >
               <Icon name='plus square' />
             </Icon.Group>
             {myCurrentHealth}/{myMaxHealth}
@@ -512,35 +749,141 @@ class Fight extends Component {
         </div>
         <div className="imageThree">
           <Header className="images" as='h2'>
-            <Icon.Group size='big'>
+            <Icon.Group >
               <Icon name='quidditch' />
             </Icon.Group>
             {this.state.pokemon.attack.phy}
           </Header>
           {myAttr === "fire" ?
           <Header className="images" as='h2'>
-            <Icon.Group size='big'>
+            <Icon.Group >
               <Icon name='gripfire' />
             </Icon.Group>
             {this.state.pokemon.attack.mag}
           </Header>
           : myAttr === "water" ?
           <Header className="images" as='h2'>
-            <Icon.Group size='big'>
+            <Icon.Group >
               <Icon name='theme' />
             </Icon.Group>
             {this.state.pokemon.attack.mag}
           </Header>
           : myAttr === "grass" ?
           <Header className="images" as='h2'>
-            <Icon.Group size='big'>
-              <Icon name='tree' />
+            <Icon.Group >
+              <Icon name='leaf' />
             </Icon.Group>
             {this.state.pokemon.attack.mag}
           </Header>
-          : <img alt="" src="#"/>}
+          : myAttr === "normal" ?
           <Header className="images" as='h2'>
-            <Icon.Group size='big'>
+            <Icon.Group >
+              <Icon name='circle' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "fighting" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='hand rock' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "flying" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='earlybirds' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "poison" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='flask' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "ground" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='blackberry' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "rock" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='chart area' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "bug" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='bug' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "ghost" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='snapchat ghost' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "steel" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='settings' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "electric" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='bolt' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "psychic" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='unhide' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "ice" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='snowflake' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "dragon" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='chess knight' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "dark" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='low vision' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : myAttr === "fairy" ?
+          <Header className="images" as='h2'>
+            <Icon.Group >
+              <Icon name='balance scale' />
+            </Icon.Group>
+            {this.state.pokemon.attack.mag}
+          </Header>
+          : <img alt="" src="#"/>
+        }
+          <Header className="images" as='h2'>
+            <Icon.Group >
               <Icon name='shield' />
             </Icon.Group>
             {this.state.pokemon.defence}
@@ -548,22 +891,26 @@ class Fight extends Component {
         </div>
         <div className="health">
           <Header as='h2'>
-            <Icon.Group size='big'>
+            <Icon.Group >
               <Icon name='bolt' />
             </Icon.Group>
             {this.state.costHave}/{this.state.costMax}
           </Header>
         </div>
-        <br/>
-        <div style={{color: 'blue'}}><strong>Cards in hand: </strong></div>
+        <div className="strong" style={{color: 'blue'}}><strong>Cards in hand: </strong></div>
         <div className="cards-in-hand">
           {
             this.state.cardsInHand.map((card, i) => {
-              return <div className="Info" draggable="true" onDrag={() => this.drag(card)} onDragEnd={() => this.drop()}><div>{card.name}: {card.description}</div><div>Cost: {card.cost}</div></div>
+              return (<div
+                onDrag={() => this.drag(card)}
+                onDragEnd={() => this.drop()}
+                draggable="true">
+                <Cards card={card}/>
+              </div>)
             })
           }
         </div>
-        <br/><button style={{marginBottom: 10}} onClick={() => this.nextRound()}>Next Round</button>
+        <button style={{marginTop: 10}} onClick={() => this.nextRound()}>Next Round</button>
       </div>
       <ReactModal
         className=''
@@ -616,9 +963,8 @@ class Fight extends Component {
         <button className="choiceA" onClick={() => this.loadFight()}>Load</button>
         <button className="choiceA" onClick={() => this.setState({showLoad: false})}>Back</button>
       </ReactModal>
-    </div>
-  )
-}
+    </div>)
+  }
 }
 
 export default Fight;

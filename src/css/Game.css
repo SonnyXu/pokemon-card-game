@@ -1,14 +1,51 @@
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+img.ui.image {
+  height: 160px;
+  width: 160px;
+}
+
+div.ui.card {
+  opacity: 0.8;
+  height: 260px;
+  width: 150px;
+}
+
+.home {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://dw9to29mmj727.cloudfront.net/promo/2016/5250-SeriesHeaders_POK_2000x800v2.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
 div.text {
   margin: 3px;
 }
 
+.container {
+  padding-left: 40px !important;
+  padding-top: 110px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-btn {
+  opacity: 0.8;
+  margin: 30px;
+}
+
 .ui.dropdown .menu>.item {
-    padding: 3px !important;
+  padding: 3px !important;
 }
 
 .ui.progress:last-child {
-    margin-top: 1px;
-    margin-bottom: 2px;
+  margin-top: 1px;
+  margin-bottom: 2px;
 }
 
 div.progress {
@@ -19,27 +56,33 @@ h2 {
   text-align: center;
 }
 
+.card {
+  text-align: center;
+  display: inline-block;
+  margin: 20px;
+}
+
 .Before-Start {
   text-align: center;
   padding-top: 100px;
 }
 
 .start-game {
-	background-color: #e74c3c;
-	box-shadow: 0 0 0 1px #c63702 inset,
-        0 0 0 2px rgba(255,255,255,0.15) inset,
-        0 8px 0 0 #C24032,
-        0 8px 0 1px rgba(0,0,0,0.4),
-				0 8px 8px 1px rgba(0,0,0,0.5);
+  background-color: #e74c3c;
+  box-shadow: 0 0 0 1px #c63702 inset,
+  0 0 0 2px rgba(255,255,255,0.15) inset,
+  0 8px 0 0 #C24032,
+  0 8px 0 1px rgba(0,0,0,0.4),
+  0 8px 8px 1px rgba(0,0,0,0.5);
 }
 
 .end-game {
-	background-color: #6DA2D9;
-	box-shadow: 0 0 0 1px #6698cb inset,
-				0 0 0 2px rgba(255,255,255,0.15) inset,
-				0 8px 0 0 rgba(110, 164, 219, .7),
-				0 8px 0 1px rgba(0,0,0,.4),
-				0 8px 8px 1px rgba(0,0,0,0.5);
+  background-color: #6DA2D9;
+  box-shadow: 0 0 0 1px #6698cb inset,
+  0 0 0 2px rgba(255,255,255,0.15) inset,
+  0 8px 0 0 rgba(110, 164, 219, .7),
+  0 8px 0 1px rgba(0,0,0,.4),
+  0 8px 8px 1px rgba(0,0,0,0.5);
 }
 
 .start-and-end {
@@ -236,5 +279,169 @@ h2 {
   outline: none;
   padding: 20px;
   margin: 0;
+}
 
+.grass {
+  width: 100%;
+  height: 100%;
+  background-image: url("http://wallpaperen.com/wp-content/uploads/2018/01/cool-grass-field-background-pokemon-x-y-battle-scene-by-jenske05-on-deviantart-grass-field-background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.fire {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://images4.alphacoders.com/125/125914.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.water {
+  width: 100%;
+  height: 100%;
+  background-image: url("http://wallpaperen.com/wp-content/uploads/2018/01/cool-grass-field-background-pokemon-x-y-battle-scene-by-jenske05-on-deviantart-grass-field-background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+/* newly added pokemons */
+
+.normal {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://pre00.deviantart.net/b866/th/pre/f/2011/321/6/6/pokemon_bubbles___normal_by_eyeofxana-d4gfl1z.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.fighting {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://cache.desktopnexus.com/cropped-wallpapers/861/861577-1440x900-[DesktopNexus.com].jpg?st=c72dg4A9Wp3ZqnKR89rj9w&e=1534449014");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.flying {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://www.imgbase.info/images/safe-wallpapers/anime/pokemon/43501_pokemon.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.poison {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://wallpapercave.com/wp/wp2443642.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.ground {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://www.imgbase.info/images/safe-wallpapers/anime/pokemon/35539_pokemon.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.rock {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://images8.alphacoders.com/558/558617.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+
+.bug {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://wallpaperwire.com/wp-content/uploads/2018/04/Pokemon-Wallpapers-Cute-11.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.ghost {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://wallpapertag.com/wallpaper/full/0/9/c/142769-free-download-ghost-pokemon-wallpaper-1920x1200.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.steel {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.pinimg.com/originals/81/ed/d5/81edd50878a36763d567cbd03dbcfe59.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.electric {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://www.50-best.com/images/pokemon_wallpapers/pikachu_face_wallpaper.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.psychic {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://orig00.deviantart.net/4e62/f/2015/060/7/a/untitled_drawing_by_powerofthemew-d8jzjji.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.ice {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://pokemongohub.net/wp-content/uploads/2018/07/393piplup1920x1200.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.dragon {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.pinimg.com/originals/1f/ae/c3/1faec3eacccd97a99b1fe7571c1f8a8f.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.dark {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://wallpapercave.com/wp/n2pACus.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.fairy {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://wallpapercave.com/wp/wp2515615.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }

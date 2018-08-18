@@ -2,6 +2,20 @@
 ### Updates and version info ###
 
 
+- **Update to Version 1.4.0**
+
+  Add 15 types of pokemon into the game (now the game has 18 types in total).
+
+  Add background on the login, register, home, map, and fight page.
+
+  The fight and map backgrounds are changed according to the enemy's and the current pokemon's type.
+
+  Update the UI of cards, which have different images, names, costs, and basic descriptions on it.
+
+- **Update to Version 1.3.2**
+
+  Improve the UI of login and register page. If players enter invalid username or password, they will see the error message.
+
 - **Update to Version 1.3.1**
 
   Players now can go back to home page during the game, but they will lose data if unsaved.

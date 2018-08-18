@@ -1,9 +1,13 @@
+.strong {
+  margin-bottom: 20px;
+}
+
 .fight{
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    padding-top: 80px;
+    padding-top: 10px;
 }
 
 .cards-in-hand {
@@ -15,24 +19,13 @@
   float: right;
 }
 
-.Info {
-  width: 80px;
-  height: 120px;
-  border: 2px black solid;
-  margin-left: 20px;
-  float: left;
-  margin-top: 10px;
-  padding: 8px
-}
-
 .health {
-  padding: 30px;
+  padding: 13.5px;
 }
 
 h2.ui.header.images {
   flex: 1;
 }
-
 
 .costs {
   padding-left: 20px;
@@ -55,4 +48,170 @@ h2.ui.header.images {
   padding: 5px 8px;
   background-color: #4CAF50;
   color: white;
+}
+
+
+.grass1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/7OVPLhCrcss/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.fire1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/jX8liqmebWk/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.water1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/9pyp6BXqcDM/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+/* newly added pokemons */
+
+.normal1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/ze6zcaemf7M/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.fighting1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/k7xQ8LWL50g/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.flying1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/ze6zcaemf7M/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.poison1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/rLslWnrYnfE/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.ground1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/k7xQ8LWL50g/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.rock1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/k7xQ8LWL50g/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+
+.bug1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/7OVPLhCrcss/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.ghost1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/D3fKX9qQAOA/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.steel1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/IK9TxCgn7IM/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.electric1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/VG0gh5GHoBU/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.psychic1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/D3fKX9qQAOA/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.ice1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/9pyp6BXqcDM/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.dragon1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/UKwJdfqhu84/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.dark1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/rLslWnrYnfE/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.fairy1 {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://i.ytimg.com/vi/F4tHUeG-Rsw/maxresdefault.jpg") !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
